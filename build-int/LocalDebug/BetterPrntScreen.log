@@ -1,4 +1,0 @@
-﻿  Vcpkg is unable to link because we cannot decide between Release and Debug libraries. Please define the property VcpkgConfiguration to be 'Release' or 'Debug' (currently 'LocalDebug').
-  BPSWindowsNotifyIcon.cpp
-a:\betterprntscreen\bps\src\bpswindowsnotifyicon.cpp(149): warning C4715: 'BPSWindowsNotifyIcon::removeFromNotification': not all control paths return a value
-  BetterPrntScreen.vcxproj -> A:\BetterPrntScreen\BPS\build\LocalDebug\BetterPrntScreen.exe
