@@ -1,0 +1,44 @@
+﻿  Application.cpp
+  BPSWindows.cpp
+a:\betterprntscreen\bps\src\bpswindows.cpp(70): warning C4101: 'bmfHeader': unreferenced local variable
+  BPSWindowsNotifyIcon.cpp
+  ISystem.cpp
+  Utilities.cpp
+a:\betterprntscreen\bps\src\utilities.cpp(12): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\time.h(505): note: see declaration of 'localtime'
+a:\betterprntscreen\bps\src\utilities.cpp(30): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: see declaration of 'fopen'
+  Generating Code...
+a:\betterprntscreen\bps\src\bpswindowsnotifyicon.cpp(29): warning C4715: 'WndProc': not all control paths return a value
+  ZipLib.lib(ZipFile.obj) : MSIL .netmodule or module compiled with /GL found; restarting link with /LTCG; add /LTCG to the link command line to improve linker performance
+  Generating code
+  Finished generating code
+ZipLib.lib(ZipFile.obj) : warning LNK4099: PDB 'ZipLib.pdb' was not found with 'ZipLib.lib(ZipFile.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\ZipLib.pdb'; linking object as if no debug info
+ZipLib.lib(ZipArchive.obj) : warning LNK4099: PDB 'ZipLib.pdb' was not found with 'ZipLib.lib(ZipArchive.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\ZipLib.pdb'; linking object as if no debug info
+ZipLib.lib(ZipArchiveEntry.obj) : warning LNK4099: PDB 'ZipLib.pdb' was not found with 'ZipLib.lib(ZipArchiveEntry.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\ZipLib.pdb'; linking object as if no debug info
+ZipLib.lib(ZipCentralDirectoryFileHeader.obj) : warning LNK4099: PDB 'ZipLib.pdb' was not found with 'ZipLib.lib(ZipCentralDirectoryFileHeader.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\ZipLib.pdb'; linking object as if no debug info
+ZipLib.lib(EndOfCentralDirectoryBlock.obj) : warning LNK4099: PDB 'ZipLib.pdb' was not found with 'ZipLib.lib(EndOfCentralDirectoryBlock.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\ZipLib.pdb'; linking object as if no debug info
+ZipLib.lib(ZipLocalFileHeader.obj) : warning LNK4099: PDB 'ZipLib.pdb' was not found with 'ZipLib.lib(ZipLocalFileHeader.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\ZipLib.pdb'; linking object as if no debug info
+ZipLib.lib(ZipGenericExtraField.obj) : warning LNK4099: PDB 'ZipLib.pdb' was not found with 'ZipLib.lib(ZipGenericExtraField.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\ZipLib.pdb'; linking object as if no debug info
+zlib.lib(inflate.obj) : warning LNK4099: PDB 'zlib.pdb' was not found with 'zlib.lib(inflate.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\zlib.pdb'; linking object as if no debug info
+zlib.lib(deflate.obj) : warning LNK4099: PDB 'zlib.pdb' was not found with 'zlib.lib(deflate.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\zlib.pdb'; linking object as if no debug info
+zlib.lib(crc32.obj) : warning LNK4099: PDB 'zlib.pdb' was not found with 'zlib.lib(crc32.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\zlib.pdb'; linking object as if no debug info
+zlib.lib(zutil.obj) : warning LNK4099: PDB 'zlib.pdb' was not found with 'zlib.lib(zutil.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\zlib.pdb'; linking object as if no debug info
+zlib.lib(adler32.obj) : warning LNK4099: PDB 'zlib.pdb' was not found with 'zlib.lib(adler32.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\zlib.pdb'; linking object as if no debug info
+zlib.lib(inftrees.obj) : warning LNK4099: PDB 'zlib.pdb' was not found with 'zlib.lib(inftrees.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\zlib.pdb'; linking object as if no debug info
+zlib.lib(inffast.obj) : warning LNK4099: PDB 'zlib.pdb' was not found with 'zlib.lib(inffast.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\zlib.pdb'; linking object as if no debug info
+zlib.lib(trees.obj) : warning LNK4099: PDB 'zlib.pdb' was not found with 'zlib.lib(trees.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\zlib.pdb'; linking object as if no debug info
+bzip2.lib(bzlib.obj) : warning LNK4099: PDB 'bzip2.pdb' was not found with 'bzip2.lib(bzlib.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\bzip2.pdb'; linking object as if no debug info
+bzip2.lib(decompress.obj) : warning LNK4099: PDB 'bzip2.pdb' was not found with 'bzip2.lib(decompress.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\bzip2.pdb'; linking object as if no debug info
+bzip2.lib(randtable.obj) : warning LNK4099: PDB 'bzip2.pdb' was not found with 'bzip2.lib(randtable.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\bzip2.pdb'; linking object as if no debug info
+bzip2.lib(bzerror.obj) : warning LNK4099: PDB 'bzip2.pdb' was not found with 'bzip2.lib(bzerror.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\bzip2.pdb'; linking object as if no debug info
+bzip2.lib(crctable.obj) : warning LNK4099: PDB 'bzip2.pdb' was not found with 'bzip2.lib(crctable.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\bzip2.pdb'; linking object as if no debug info
+bzip2.lib(compress.obj) : warning LNK4099: PDB 'bzip2.pdb' was not found with 'bzip2.lib(compress.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\bzip2.pdb'; linking object as if no debug info
+bzip2.lib(huffman.obj) : warning LNK4099: PDB 'bzip2.pdb' was not found with 'bzip2.lib(huffman.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\bzip2.pdb'; linking object as if no debug info
+bzip2.lib(blocksort.obj) : warning LNK4099: PDB 'bzip2.pdb' was not found with 'bzip2.lib(blocksort.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\bzip2.pdb'; linking object as if no debug info
+lzma.lib(LzmaDec.obj) : warning LNK4099: PDB 'lzma.pdb' was not found with 'lzma.lib(LzmaDec.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\lzma.pdb'; linking object as if no debug info
+lzma.lib(LzmaEnc.obj) : warning LNK4099: PDB 'lzma.pdb' was not found with 'lzma.lib(LzmaEnc.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\lzma.pdb'; linking object as if no debug info
+lzma.lib(LzFindMt.obj) : warning LNK4099: PDB 'lzma.pdb' was not found with 'lzma.lib(LzFindMt.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\lzma.pdb'; linking object as if no debug info
+lzma.lib(LzFind.obj) : warning LNK4099: PDB 'lzma.pdb' was not found with 'lzma.lib(LzFind.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\lzma.pdb'; linking object as if no debug info
+lzma.lib(Threads.obj) : warning LNK4099: PDB 'lzma.pdb' was not found with 'lzma.lib(Threads.obj)' or at 'A:\BetterPrntScreen\BPS\build\Release\lzma.pdb'; linking object as if no debug info
+  BetterPrntScreen.vcxproj -> A:\BetterPrntScreen\BPS\build\Release\BetterPrntScreen.exe

@@ -1,0 +1,4 @@
+# REQUIRED
+	- libcur
+	- libui
+	- ziplib
