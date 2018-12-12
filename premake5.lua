@@ -27,8 +27,6 @@ function linkLIBUI_RELEASE()
 end
 -- RELEASE
 
-
-
 workspace "BPS"
    configurations {"Debug", "Release", "LocalDebug", "LocalRelease"}
    cppdialect "C++17"
