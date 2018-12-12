@@ -8,21 +8,21 @@ end
 --INCLUDE
 --DEBUG
 function linkCURL_DEBUG()
-   libdirs{"vendor/curl/build/lib/Debug"}
+   libdirs{"vendor/libs"}
    links  {"libcurl-d_imp"}
 end
 function linkLIBUI_DEBUG()
-   libdirs{"vendor/libui/build/out/Debug"}
+   libdirs{"vendor/libs"}
    links {"libui_d"}
 end
 --DEBUG
 -- RELEASE
 function linkCURL_RELEASE()
-   libdirs{"vendor/curl/build/lib/Release"}
+   libdirs{"vendor/libs"}
    links  {"libcurl_imp"}
 end
 function linkLIBUI_RELEASE()
-   libdirs{"vendor/libui/build/out/Release"}
+   libdirs{"vendor/libs"}
    links {"libui"}
 end
 -- RELEASE
