@@ -10,5 +10,5 @@ public:
 
 	static bool doesFileExist(std::string path);
 
-	static void updateSequence(ISystem& SystemCore, std::string dir);
+	static void updateSequence(std::string dir);
 };

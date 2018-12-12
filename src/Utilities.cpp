@@ -36,35 +36,63 @@ bool Utilities::doesFileExist(std::string path) {
 	}
 }
 
-void Utilities::updateSequence(ISystem& SystemCore, std::string dir)
+void Utilities::updateSequence(std::string dir)
 {
-	if (Network::getServerClientVersion().find(SystemCore.clientVersion) != std::string::npos) {
-		std::string workingDir;
-		SystemLog("Client up-to date!")
-		#ifndef NDEBUG
-					workingDir = dir;
-					SystemLog(workingDir)
-					workingDir = workingDir.substr(0, workingDir.rfind('\\')) + "\\DELETEME";
-		#else
-					workingDir = "DELETEME";
-		#endif // !NDEBUG
+#ifdef LOCALBUILD
+	if (Network::getServerClientVersion().find(ISystem::getClientVersion()) != std::string::npos) {
+	std::string workingDir;
+	SystemLog("Client up-to date!")
+	workingDir = "DELETEME";
 
-		if (Utilities::doesFileExist(workingDir)) {
-			if (remove(workingDir.c_str()) != 0) {
-				SystemLog("Failed to remove the old installation...")
-			}
-			else {
-				SystemLog("Successfully removed the old installation!")
-			};
+	if (Utilities::doesFileExist(workingDir)) {
+		SystemLog("Trying to delete: %s", workingDir.c_str())
+		if (remove(workingDir.c_str()) != 0) {
+			SystemLog("Failed to remove the old installation...")
+		}
+		else {
+			SystemLog("Successfully removed the old installation!")
 		}
 	}
-	else {
-		SystemLog("Update ready!")
-		Network::downloadUpdate();
-		Utilities::unzipUpdate();
-		rename("BetterPrntScreen.exe", "DELETEME");
-		rename("BetterPrntScreenUpdated.exe", "BetterPrntScreen.exe");
-		system("BetterPrntScreen.exe");
-		quick_exit(0);
-	}
+}
+else {
+	SystemLog("Update ready -- installing!")
+	Network::downloadUpdate();
+	Utilities::unzipUpdate();
+	rename("BetterPrntScreen.exe", "DELETEME");
+	rename("BetterPrntScreenUpdated.exe", "BetterPrntScreen.exe");
+	system("BetterPrntScreen.exe");
+	ISystem::setShutdownFlag(true);
+}
+#endif
+
+
+	//if (Network::getServerClientVersion().find(ISystem::getClientVersion()) != std::string::npos) {
+	//	std::string workingDir;
+	//	SystemLog("Client up-to date!")
+	//	#ifndef NDEBUG
+	//				workingDir = dir;
+	//				SystemLog(workingDir)
+	//				workingDir = workingDir.substr(0, workingDir.rfind('\\')) + "\\DELETEME";
+	//	#else
+	//				workingDir = "DELETEME";
+	//	#endif // !NDEBUG
+
+	//	if (Utilities::doesFileExist(workingDir)) {
+	//		if (remove(workingDir.c_str()) != 0) {
+	//			SystemLog("Failed to remove the old installation...")
+	//		}
+	//		else {
+	//			SystemLog("Successfully removed the old installation!")
+	//		};
+	//	}
+	//}
+	//else {
+	//	SystemLog("Update ready!")
+	//	Network::downloadUpdate();
+	//	Utilities::unzipUpdate();
+	//	rename("BetterPrntScreen.exe", "DELETEME");
+	//	rename("BetterPrntScreenUpdated.exe", "BetterPrntScreen.exe");
+	//	system("BetterPrntScreen.exe");
+	//	quick_exit(0);
+	//}
 }

@@ -9,10 +9,9 @@ int main(int argc, char *argv[]) {
 #ifdef _WIN32
 	SystemCore = new BPSWindows();
 	NotificationIcon = new BPSWindowsNotifyIcon();
-#ifndef NDEBUG
+#ifdef NDEBUG
 	ShowWindow(GetConsoleWindow(), SW_SHOW);
 #else
-	//ShowWindow(GetConsoleWindow(), SW_HIDE);
 	ShowWindow(GetConsoleWindow(), SW_SHOW);
 #endif // !NDBUG
 	if (SystemCore->registerForStartup(argv[0])) {
@@ -22,9 +21,11 @@ int main(int argc, char *argv[]) {
 		SystemLog("failed to add to startup!")
 	}
 #endif
-	SystemLog("Current client version: %s", SystemCore->clientVersion)
+	SystemLog("Current client version: %s", ISystem::getClientVersion().c_str())
 	//Checks for updates deppending on client/server version.
-	Utilities::updateSequence(*SystemCore, argv[0]);
+#ifdef NDEBUG
+	Utilities::updateSequence(argv[0]);
+#endif
 
 	std::thread notiThread(&INotifyIcon::init, NotificationIcon);
 

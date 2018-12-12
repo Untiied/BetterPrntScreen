@@ -60,7 +60,7 @@ void Network::downloadUpdate() {
 	};
 
 #if LOCALBUILD
-	curl_easy_setopt(curlhash, CURLOPT_URL, std::string(localHostname + "downloadPortable").c_str());
+	curl_easy_setopt(curlhash, CURLOPT_URL, std::string(localHostname + "api/download").c_str());
 #else
 	curl_easy_setopt(curlhash, CURLOPT_URL, std::string(outerHostname + "downloadPortable").c_str());
 #endif 

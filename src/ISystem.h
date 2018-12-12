@@ -3,8 +3,6 @@
 
 class ISystem {
 public:
-	const char* clientVersion = "0.0.76";
-
 	/*
 		Each system type need to include these overrides based on the system specifications, and api's.
 
@@ -30,6 +28,7 @@ public:
 	virtual void disposeLogFile() = 0;
 
 public:
+	//TODO: Move these to the .cpp file.
 	static inline bool ShouldShutdown() {
 		return shutdownFlag;
 	}
@@ -41,6 +40,8 @@ public:
 	bool keyCodeHandler[101];
 	const std::string applicationName = "BetterPrntScreen";
 	const std::string applicationNamePathed = "/BetterPrntScreen/";
+	static std::string getClientVersion();
 private:
+	static std::string clientVersion;
 	static bool shutdownFlag;
 };
