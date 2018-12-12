@@ -23,9 +23,6 @@ int main(int argc, char *argv[]) {
 #endif
 	SystemLog("Current client version: %s", ISystem::getClientVersion().c_str())
 	//Checks for updates deppending on client/server version.
-#ifdef NDEBUG
-	Utilities::updateSequence(argv[0]);
-#endif
 
 	std::thread notiThread(&INotifyIcon::init, NotificationIcon);
 

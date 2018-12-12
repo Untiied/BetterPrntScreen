@@ -51,7 +51,7 @@ std::string Network::getServerClientVersion() {
 	}
 }
 
-void Network::downloadUpdate() {
+void Network::downloadNewestUpdate() {
 	CURL *curlhash = curl_easy_init();
 	CURLcode response;
 	struct FtpFile ftpfile = {

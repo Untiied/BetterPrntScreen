@@ -17,7 +17,7 @@ public:
 
 	static std::string getServerClientVersion();
 
-	static void downloadUpdate();
+	static void downloadNewestUpdate();
 
 	//During this function it upload the screenshot, and will also save the link to the clipboard.
 	static void uploadFileToServer(const char* path);
