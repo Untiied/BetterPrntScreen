@@ -1,5 +1,4 @@
 #include "Utilities.h"
-#include <ZipLib/ZipFile.h>
 #include "Network.h"
 #include "Logger.h"
 #include <time.h>
