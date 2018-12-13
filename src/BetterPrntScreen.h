@@ -15,3 +15,4 @@
 #include "Logger.h"
 #include "Utilities.h"
 #include "Network.h"
+#include "Updater.h"

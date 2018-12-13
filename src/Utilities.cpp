@@ -14,3 +14,13 @@ std::string Utilities::currentDateTime() {
 
 	return buf;
 }
+
+float Utilities::versionToFloat(std::string version)
+{
+	std::string major = version.substr(0, 1);
+	std::string minor = version.substr(2, 3);
+	std::string patch = version.substr(4, 5);
+
+	
+	return std::stof(major + minor + patch);
+}

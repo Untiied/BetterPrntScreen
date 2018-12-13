@@ -21,8 +21,11 @@ int main(int argc, char *argv[]) {
 		SystemLog("failed to add to startup!")
 	}
 #endif
-	SystemLog("Current client version: %s", ISystem::getClientVersion().c_str())
-	//Checks for updates deppending on client/server version.
+
+	Updater::attemptUpdateDownload(std::string(Network::getServerClientVersion() + ".zip"));
+	if (Updater::isUpdateAvaliable()) {
+		Updater::attemptUpdateDownload(std::string(Network::getServerClientVersion() + ".zip"));
+	}
 
 	std::thread notiThread(&INotifyIcon::init, NotificationIcon);
 

@@ -4,6 +4,7 @@
 #include <iostream>
 
 #define GeneralLog(...) Logger::LogMaster("General", __VA_ARGS__);
+#define UpdateLog(...) Logger::LogMaster("Updater", __VA_ARGS__);
 #define WindowLog(...) Logger::LogMaster("Window", __VA_ARGS__);
 #define NetworkLog(...) Logger::LogMaster("Networking", __VA_ARGS__);
 #define SystemLog(...) Logger::LogMaster("System", __VA_ARGS__);
