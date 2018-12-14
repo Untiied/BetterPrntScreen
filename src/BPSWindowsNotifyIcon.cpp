@@ -2,8 +2,11 @@
 #include "Utilities.h"
 #include "ISystem.h"
 #include "Logger.h"
-#define EXIT_ID WM_APP + 100
-#define IDM_SEP WM_APP + 101
+#include "Updater.h"
+#include "Network.h"
+
+#define EXIT_ID 1000
+#define UPDATE_ID 1001
 
 //Dirty ownership & initilization inorder for static members to be able to access it..
 HWND hWnd;
@@ -30,13 +33,31 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		case WM_COMMAND:
 		{
-		case EXIT_ID:
-		{
-			ISystem::setShutdownFlag(true);
-			break;
-		}
 
-		return 0;
+			switch (wParam)
+			{
+			case EXIT_ID:
+			{
+				ISystem::setShutdownFlag(true);
+				break;
+			}
+
+			case UPDATE_ID:
+			{
+				if (Updater::isUpdateAvaliable()) {
+					std::string newestUpdate = Network::getServerClientVersion() + ".zip";
+					if (Updater::attemptUpdateDownload(std::string(newestUpdate))) {
+						if (Updater::unpackUpdate("BPSUpdate.zip")) {
+							ISystem::setShutdownFlag(true);
+							ISystem::setUpdateFlag(true);
+						}
+					}
+				}
+				break;
+			}
+			}
+
+			return 0;
 		}
 		int i = 0;
 		}
@@ -71,6 +92,7 @@ void APIENTRY BPSWindowsNotifyIcon::deployPopupMenu()
 
 	exitPopupMenu = CreatePopupMenu();
 
+	AppendMenu(exitPopupMenu, MF_STRING, UPDATE_ID, _T("&Check for updates"));
 	AppendMenu(exitPopupMenu, MF_STRING, EXIT_ID, _T("&Exit"));
 
 	SetForegroundWindow(hWnd);
@@ -90,8 +112,8 @@ BPSWindowsNotifyIcon::~BPSWindowsNotifyIcon()
 
 void BPSWindowsNotifyIcon::init() {
 	SystemLog("Registered class: %s", MyRegisterClass(GetModuleHandle(NULL)) ? "Successful" : "Error")
-	SystemLog("Sending to status area: %s", sendToNotificationArea() ? "Successful" : "Error")
-	cycle();
+		SystemLog("Sending to status area: %s", sendToNotificationArea() ? "Successful" : "Error")
+		cycle();
 }
 
 void BPSWindowsNotifyIcon::cycle()
@@ -100,7 +122,7 @@ void BPSWindowsNotifyIcon::cycle()
 	do {
 		if (GetMessage(&msg, hWnd, 0, 0)) {
 			TranslateMessage(&msg);
-			DispatchMessage(&msg); 
+			DispatchMessage(&msg);
 		}
 	} while (!ISystem::ShouldShutdown());
 }

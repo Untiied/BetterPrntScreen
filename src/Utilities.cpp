@@ -1,9 +1,9 @@
 #include "Utilities.h"
-#include <ZipLib/ZipFile.h>
 #include "Network.h"
 #include "Logger.h"
 #include <time.h>
-
+#define ZLIB_WINAPI
+#include <zipper/unzipper.h>
 
 std::string Utilities::currentDateTime() {
 	time_t     now = time(0);
@@ -16,83 +16,23 @@ std::string Utilities::currentDateTime() {
 	return buf;
 }
 
-void Utilities::unzipUpdate()
+float Utilities::versionToFloat(std::string version)
 {
-	try {
-		ZipFile::ExtractFile("BetterPrntScreenUpdate.zip", "BetterPrntScreenPortable/BetterPrntScreen.exe", "BetterPrntScreenUpdated.exe");
-	}
-	catch (std::exception& e) {
-		GeneralLog("An exception occured: '%s'\n", e.what())
-	}
+	std::string major = version.substr(0, 1);
+	std::string minor = version.substr(2, 3);
+	std::string patch = version.substr(4, 5);
+
+	
+	return std::stof(major + minor + patch);
 }
 
-bool Utilities::doesFileExist(std::string path) {
-	if (FILE *file = fopen(path.c_str(), "r")) {
-		fclose(file);
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-void Utilities::updateSequence(std::string dir)
+bool Utilities::unpackFile(std::string fileName)
 {
-#ifdef LOCALBUILD
-	if (Network::getServerClientVersion().find(ISystem::getClientVersion()) != std::string::npos) {
-	std::string workingDir;
-	SystemLog("Client up-to date!")
-	workingDir = "DELETEME";
+	using namespace zipper;
 
-	if (Utilities::doesFileExist(workingDir)) {
-		SystemLog("Trying to delete: %s", workingDir.c_str())
-		if (remove(workingDir.c_str()) != 0) {
-			SystemLog("Failed to remove the old installation...")
-		}
-		else {
-			SystemLog("Successfully removed the old installation!")
-		}
-	}
-}
-else {
-	SystemLog("Update ready -- installing!")
-	Network::downloadUpdate();
-	Utilities::unzipUpdate();
-	rename("BetterPrntScreen.exe", "DELETEME");
-	rename("BetterPrntScreenUpdated.exe", "BetterPrntScreen.exe");
-	system("BetterPrntScreen.exe");
-	ISystem::setShutdownFlag(true);
-}
-#endif
+	Unzipper unzipper(fileName);
+	bool success = unzipper.extract("NEW");
+	unzipper.close();
 
-
-	//if (Network::getServerClientVersion().find(ISystem::getClientVersion()) != std::string::npos) {
-	//	std::string workingDir;
-	//	SystemLog("Client up-to date!")
-	//	#ifndef NDEBUG
-	//				workingDir = dir;
-	//				SystemLog(workingDir)
-	//				workingDir = workingDir.substr(0, workingDir.rfind('\\')) + "\\DELETEME";
-	//	#else
-	//				workingDir = "DELETEME";
-	//	#endif // !NDEBUG
-
-	//	if (Utilities::doesFileExist(workingDir)) {
-	//		if (remove(workingDir.c_str()) != 0) {
-	//			SystemLog("Failed to remove the old installation...")
-	//		}
-	//		else {
-	//			SystemLog("Successfully removed the old installation!")
-	//		};
-	//	}
-	//}
-	//else {
-	//	SystemLog("Update ready!")
-	//	Network::downloadUpdate();
-	//	Utilities::unzipUpdate();
-	//	rename("BetterPrntScreen.exe", "DELETEME");
-	//	rename("BetterPrntScreenUpdated.exe", "BetterPrntScreen.exe");
-	//	system("BetterPrntScreen.exe");
-	//	quick_exit(0);
-	//}
+	return success;
 }

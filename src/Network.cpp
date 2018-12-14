@@ -42,27 +42,27 @@ std::string Network::getServerClientVersion() {
 
 	if (response == CURLE_OK) {
 		curl_easy_cleanup(curlhash);
-		return responseFromServer;
+		return responseFromServer.substr(0, responseFromServer.rfind('\n'));
 	}
 	else {
-		NetworkLog("Couldn't receive clientVersion from server...");
+		NetworkLog("Couldn't receive the clientVersion from server...");
 		curl_easy_cleanup(curlhash);
 		return nullptr;
 	}
 }
 
-void Network::downloadUpdate() {
+bool Network::downloadNewestUpdate(std::string fileName) {
 	CURL *curlhash = curl_easy_init();
 	CURLcode response;
 	struct FtpFile ftpfile = {
-	  "BetterPrntScreenUpdate.zip", /* name to store the file as if successful */
+	  "BPSUpdate.zip", /* name to store the file as if successful */
 	  NULL
 	};
 
 #if LOCALBUILD
-	curl_easy_setopt(curlhash, CURLOPT_URL, std::string(localHostname + "api/download").c_str());
+	curl_easy_setopt(curlhash, CURLOPT_URL, std::string(localHostname + "api/download/" + fileName).c_str());
 #else
-	curl_easy_setopt(curlhash, CURLOPT_URL, std::string(outerHostname + "downloadPortable").c_str());
+	curl_easy_setopt(curlhash, CURLOPT_URL, std::string(outerHostname + "api/download/" + fileName).c_str());
 #endif 
 	curl_easy_setopt(curlhash, CURLOPT_WRITEFUNCTION, WriteFileCallback);
 	curl_easy_setopt(curlhash, CURLOPT_WRITEDATA, &ftpfile);
@@ -73,12 +73,14 @@ void Network::downloadUpdate() {
 			curl_easy_cleanup(curlhash);
 		if (ftpfile.stream)
 			fclose(ftpfile.stream); /* close the local file */
+		return true;
 	}
 	else {
 		NetworkLog("Couldn't receive newest client download from server...")
 			curl_easy_cleanup(curlhash);
 		if (ftpfile.stream)
 			fclose(ftpfile.stream); /* close the local file */
+		return false;
 	}
 }
 

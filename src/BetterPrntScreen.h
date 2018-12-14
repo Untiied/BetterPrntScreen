@@ -1,9 +1,6 @@
 //Curl
 #include <curl/curl.h>
 
-//ZipLib
-#include <ZipLib/ZipFile.h>
-
 //Standard
 #include <iostream>
 #include <string>
@@ -18,3 +15,4 @@
 #include "Logger.h"
 #include "Utilities.h"
 #include "Network.h"
+#include "Updater.h"

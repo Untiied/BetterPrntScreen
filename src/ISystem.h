@@ -33,8 +33,16 @@ public:
 		return shutdownFlag;
 	}
 
+	static inline bool ShouldUpdate() {
+		return updateFlag;
+	}
+
 	static inline void setShutdownFlag(bool flag) {
 		shutdownFlag = flag;
+	}
+
+	static inline void setUpdateFlag(bool flag) {
+		updateFlag = flag;
 	}
 
 	bool keyCodeHandler[101];
@@ -44,4 +52,5 @@ public:
 private:
 	static std::string clientVersion;
 	static bool shutdownFlag;
+	static bool updateFlag;
 };

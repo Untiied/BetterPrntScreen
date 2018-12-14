@@ -6,9 +6,9 @@ public:
 	//Retrives the date/time in 'Year/Month/Day/Hour/Sec' format.
 	static std::string currentDateTime();
 
-	static void unzipUpdate();
+	//Converts the recieved version strings to a float for comparison.
+	static float versionToFloat(std::string version);
 
-	static bool doesFileExist(std::string path);
-
-	static void updateSequence(std::string dir);
+	//Uses zipper to unpack a zip file into a folder.
+	static bool unpackFile(std::string fileName);
 };
