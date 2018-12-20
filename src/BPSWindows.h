@@ -2,6 +2,7 @@
 #include "ISystem.h"
 #include <iostream>
 #include <string>
+#include <vector>
 #ifdef _WIN32
 #include <Windows.h>
 #include <gdiplus.h>
@@ -10,42 +11,38 @@
 #pragma comment (lib, "GdiPlus.lib")
 #endif
 
-class BPSWindows : public ISystem {
-public:
-	BPSWindows::BPSWindows();
-	BPSWindows::~BPSWindows();
-
-	bool wasKeyPressed(int keyCode);
-
-	std::string captureSnapShot();
-
-	std::string getAppDataPath();
-
-	void disposeLogFile();
-
-	bool registerForStartup(const char* str);
-
-	inline std::string getWorkingDir()
+namespace BetterPrntScreen
+{
+	namespace Windows
 	{
-		const unsigned long maxDir = 260;
-		char currentDir[maxDir];
-		::GetCurrentDirectoryA(maxDir, currentDir);
-		return std::string(currentDir);
-	}
+		class BPSWindows : public ISystem {
+		public:
+			BPSWindows::BPSWindows();
+			BPSWindows::~BPSWindows();
 
-	inline std::wstring stringtoWString(const std::string& str) {
-		int len;
-		int slength = (int)str.length() + 1;
-		len = MultiByteToWideChar(CP_ACP, 0, str.c_str(), slength, 0, 0);
-		wchar_t* buf = new wchar_t[len];
-		MultiByteToWideChar(CP_ACP, 0, str.c_str(), slength, buf, len);
-		std::wstring r(buf);
-		delete[] buf;
-		return r;
-	};
-private:
-	ULONG_PTR gdiplusToken;
-	HWND windowsWindow = GetDesktopWindow();
-	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-	std::string screenshotsAppdataFolder = getAppDataPath() + applicationNamePathed + "screenshots/";
-};
+			std::string GetAppDataPath();
+
+			std::string GetWorkingDir();
+
+			std::wstring StringtoWString(const std::string& str);
+
+			void DisposeLogFile();
+
+			std::string CaptureSnapShot();
+
+			Point GetCursorPosition();
+
+			bool IsKeyPressed(const int keyCode);
+
+			bool IsKeyReleased(const int keyCode);
+
+			bool RegisterForStartup(const char* str);
+
+		private:
+			ULONG_PTR m_GdiPlusToken;
+			HWND m_WindowsDesktopWindow = GetDesktopWindow();
+			Gdiplus::GdiplusStartupInput m_GdiPlusStartupInput;
+			const std::string m_ScreenshotsAppdataFolder = GetAppDataPath() + m_ApplicationNamePathed + "screenshots/";
+		};
+	}
+}

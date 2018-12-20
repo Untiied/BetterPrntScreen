@@ -1,56 +1,77 @@
 #pragma once
 #include <string>
 
-class ISystem {
-public:
-	/*
-		Each system type need to include these overrides based on the system specifications, and api's.
+namespace BetterPrntScreen
+{
 
-		Specifications for each system -
-		1. Root folder path.
-		2. screenshots path under root folder.
-		3. logs path under root folder.
-	*/
+	struct Point
+	{
+		int x, y;
 
-	//Check for key pressed callback
-	virtual bool wasKeyPressed(int keycode) = 0;
+		Point(){};
 
-	//Needs to return the path to the file just saved.
-	virtual std::string captureSnapShot() = 0;
+		Point(int x, int y)
+			: x(x), y(y)
+		{}
+	};
 
-	virtual std::string getAppDataPath() = 0;
+	class ISystem {
+	public:
+		/*
+			Each system type need to include these overrides based on the system specifications, and api's.
 
-	virtual std::string getWorkingDir() = 0;
+			Specifications for each system -
+			1. Root folder path.
+			2. screenshots path under root folder.
+			3. logs path under root folder.
+		*/
 
-	virtual bool registerForStartup(const char*) = 0;
-	
-	//Used to manually force the write of a log file.
-	virtual void disposeLogFile() = 0;
+		//Check for key pressed callback
+		virtual bool IsKeyPressed(int keycode) = 0;
 
-public:
-	//TODO: Move these to the .cpp file.
-	static inline bool ShouldShutdown() {
-		return shutdownFlag;
-	}
+		virtual bool IsKeyReleased(int keycode) = 0;
+		//Needs to return the path to the file just saved.
+		virtual std::string CaptureSnapShot() = 0;
 
-	static inline bool ShouldUpdate() {
-		return updateFlag;
-	}
+		virtual Point GetCursorPosition() = 0;
 
-	static inline void setShutdownFlag(bool flag) {
-		shutdownFlag = flag;
-	}
+		virtual std::string GetAppDataPath() = 0;
 
-	static inline void setUpdateFlag(bool flag) {
-		updateFlag = flag;
-	}
+		virtual std::string GetWorkingDir() = 0;
 
-	bool keyCodeHandler[101];
-	const std::string applicationName = "BetterPrntScreen";
-	const std::string applicationNamePathed = "/BetterPrntScreen/";
-	static std::string getClientVersion();
-private:
-	static std::string clientVersion;
-	static bool shutdownFlag;
-	static bool updateFlag;
-};
+		virtual bool RegisterForStartup(const char*) = 0;
+
+		//Used to manually force the write of a log file.
+		virtual void DisposeLogFile() = 0;
+
+	public:
+		//TODO: Move these to the .cpp file.
+		static inline bool ShouldShutdown() {
+			return m_ShutdownFlag;
+		}
+
+		static inline bool ShouldUpdate() {
+			return m_UpdateFlag;
+		}
+
+		static inline void SetShutdownFlag(bool flag) {
+			m_ShutdownFlag = flag;
+		}
+
+		static inline void SetUpdateFlag(bool flag) {
+			m_UpdateFlag = flag;
+		}
+
+		bool keyCodeHandler[101];
+		const std::string m_ApplicationName = "BetterPrntScreen";
+		const std::string m_ApplicationNamePathed = "/BetterPrntScreen/";
+		static const std::string GetClientVersion();
+	private:
+		static std::string m_ClientVersion;
+		static bool m_ShutdownFlag;
+		static bool m_UpdateFlag;
+	};
+
+}
+
+

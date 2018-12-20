@@ -6,16 +6,22 @@
 #include <shellapi.h>
 #include <tchar.h>
 
-class BPSWindowsNotifyIcon : public INotifyIcon {
-public:
-	BPSWindowsNotifyIcon();
-	~BPSWindowsNotifyIcon();
-public:
-	void init();
-	void cycle();
-	bool sendToNotificationArea();
-	bool removeFromNotificationArea();
+namespace BetterPrntScreen
+{
+	namespace Windows
+	{
+		class BPSWindowsNotifyIcon : public INotifyIcon {
+		public:
+			BPSWindowsNotifyIcon();
+			~BPSWindowsNotifyIcon();
+		public:
+			void Init();
+			void Cycle();
+			bool SendToNotificationArea();
+			bool RemoveFromNotificationArea();
 
-	//Win api needs to call this. Not class specific.
-	static void APIENTRY deployPopupMenu();
-};
+			//Win api needs to call this. Not class specific.
+			static void APIENTRY DeployPopupMenu();
+		};
+	}
+}

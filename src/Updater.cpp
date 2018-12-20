@@ -4,11 +4,13 @@
 #include "ISystem.h"
 #include "Logger.h"
 
+namespace BPS = ::BetterPrntScreen;
+
 bool Updater::isUpdateAvaliable()
 {
 	//Used to reduce bandwith.
 	std::string serverVersion = Network::getServerClientVersion();
-	std::string clientVersion = ISystem::getClientVersion();
+	std::string clientVersion = BPS::ISystem::GetClientVersion();
 
 	//Converts the strings recived into the float for comparison.
 	float serverClientVersion = Utilities::versionToFloat(serverVersion);
