@@ -102,6 +102,7 @@ project "BetterPrntScreen"
       linkCURL_DEBUG()
       linkLIBUI_DEBUG()
       linkZIPPER_DEBUG()
+      linkNANA_DEBUG()
       defines { "DEBUG", "LOCALBUILD" }
       runtime("Debug")
 
@@ -109,5 +110,6 @@ project "BetterPrntScreen"
       linkCURL_RELEASE()
       linkLIBUI_RELEASE()
       linkZIPPER_RELEASE()
+      linkNANA_RELEASE()
       defines { "NDEBUG", "LOCALBUILD" }
       optimize "On"  

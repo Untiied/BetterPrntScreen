@@ -30,8 +30,12 @@ namespace BetterPrntScreen
 		virtual bool IsKeyPressed(int keycode) = 0;
 
 		virtual bool IsKeyReleased(int keycode) = 0;
+
+		virtual void AwaitMousePress() = 0;
 		//Needs to return the path to the file just saved.
 		virtual std::string CaptureSnapShot() = 0;
+
+		virtual std::string CaptureSnapShotBetween(Point bound1, Point bound2) = 0;
 
 		virtual Point GetCursorPosition() = 0;
 

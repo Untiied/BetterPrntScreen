@@ -70,6 +70,13 @@ namespace BetterPrntScreen
 			return (!keyCodeHandler[keyCode] && previousState);
 		}
 
+		void BPSWindows::AwaitMousePress()
+		{
+			while (!IsKeyPressed(VK_LBUTTON)) {
+				Sleep(1);
+			}
+		}
+
 		std::string BPSWindows::CaptureSnapShot()
 		{
 			bool				isSuccessful = false;
@@ -114,6 +121,78 @@ namespace BetterPrntScreen
 			DWORD dwBmpSize = ((bmpScreen.bmWidth * bi.biBitCount + 31) / 32) * 4 * bmpScreen.bmHeight;
 			std::vector<char> bits(dwBmpSize);
 			GetDIBits(hwindowCompatibleDC, hbwindow, 0, bmpScreen.bmHeight, &bits[0], (BITMAPINFO*)&bi, DIB_RGB_COLORS);  //copy from hwindowCompatibleDC to hbwindow
+
+			DeleteObject(hbwindow);
+			DeleteDC(hwindowCompatibleDC);
+			ReleaseDC(m_WindowsDesktopWindow, hwindowDC);
+
+			// Anything from here on is strictly using the GDI api.
+			Gdiplus::Bitmap* screenBitmap = Gdiplus::Bitmap::FromBITMAPINFO((BITMAPINFO*)&bi, &bits[0]);
+
+			CLSID encoderClsid;
+			GetEncoderClsid(L"image/png", &encoderClsid);
+			std::string pngfilepath = m_ScreenshotsAppdataFolder + "screenshot" + "-" + Utilities::currentDateTime() + ".png";
+			screenBitmap->Save(StringtoWString(pngfilepath).c_str(), &encoderClsid);
+
+			return pngfilepath;
+		}
+
+		std::string BPSWindows::CaptureSnapShotBetween(Point bound1, Point bound2)
+		{
+			Point upperBound;
+			Point lowerBound;
+			if (bound1.y <= bound2.y) {
+				upperBound = bound1;
+				lowerBound = bound2;
+			}
+			else {
+				upperBound = bound2;
+				lowerBound = bound1;
+			}
+
+
+			bool				isSuccessful = false;
+			HDC					hwindowDC, hwindowCompatibleDC;
+			int					height, width;
+			HBITMAP				hbwindow;
+			BITMAPINFOHEADER	bi;
+			BITMAPFILEHEADER	bmfHeader;
+			BITMAP				bmpScreen;
+			RECT				windowsize;
+
+			hwindowDC = GetDC(m_WindowsDesktopWindow);
+			hwindowCompatibleDC = CreateCompatibleDC(hwindowDC);
+			SetStretchBltMode(hwindowCompatibleDC, COLORONCOLOR);
+
+			GetClientRect(m_WindowsDesktopWindow, &windowsize);
+
+			height = lowerBound.y - upperBound.y;
+			width = lowerBound.x - upperBound.x;
+
+			// create a bitmap
+			hbwindow = CreateCompatibleBitmap(hwindowDC, width, height);
+			GetObject(hbwindow, sizeof(BITMAP), &bmpScreen);
+
+			bi.biSize = sizeof(BITMAPINFOHEADER);    //http://msdn.microsoft.com/en-us/library/windows/window/dd183402%28v=vs.85%29.aspx
+			bi.biWidth = width;
+			bi.biHeight = height;  //this is the line that makes it draw upside down or not
+			bi.biPlanes = 1;
+			bi.biBitCount = 32;
+			bi.biCompression = BI_RGB;
+			bi.biSizeImage = 0;
+			bi.biXPelsPerMeter = 0;
+			bi.biYPelsPerMeter = 0;
+			bi.biClrUsed = 0;
+			bi.biClrImportant = 0;
+
+			// use the previously created device context with the bitmap
+			SelectObject(hwindowCompatibleDC, hbwindow);
+			// copy from the window device context to the bitmap device context
+			StretchBlt(hwindowCompatibleDC, 0, 0, width, height, hwindowDC, upperBound.x, upperBound.y, width, height, SRCCOPY); //change SRCCOPY to NOTSRCCOPY for wacky colors !
+
+			DWORD dwBmpSize = ((width * bi.biBitCount + 31) / 32) * 4 * height;
+			std::vector<char> bits(dwBmpSize);
+			GetDIBits(hwindowCompatibleDC, hbwindow, 0, height, &bits[0], (BITMAPINFO*)&bi, DIB_RGB_COLORS);  //copy from hwindowCompatibleDC to hbwindow
 
 			DeleteObject(hbwindow);
 			DeleteDC(hwindowCompatibleDC);

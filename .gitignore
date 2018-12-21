@@ -261,3 +261,4 @@ __pycache__/
 *.pyc
 /vendor/zipper
 /vendor/nana
+/vendor/temp/nana

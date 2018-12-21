@@ -30,11 +30,15 @@ namespace BetterPrntScreen
 
 			std::string CaptureSnapShot();
 
+			std::string CaptureSnapShotBetween(Point bound1, Point bound2);
+
 			Point GetCursorPosition();
 
 			bool IsKeyPressed(const int keyCode);
 
 			bool IsKeyReleased(const int keyCode);
+
+			void AwaitMousePress();
 
 			bool RegisterForStartup(const char* str);
 
