@@ -77,6 +77,14 @@ namespace BetterPrntScreen
 			}
 		}
 
+		bool BPSWindows::AwaitKeyRelease(int keyCode)
+		{
+			while (IsKeyPressed(keyCode)) {
+				Sleep(1);
+			}
+			return true;
+		}
+
 		std::string BPSWindows::CaptureSnapShot()
 		{
 			bool				isSuccessful = false;

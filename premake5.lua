@@ -8,9 +8,6 @@ end
 function includeZIPPER()
    includedirs {"vendor/zipper"}
 end
-function includeNANA()
-   includedirs {"vendor/nana/include"}
-end
 --INCLUDE
 --DEBUG
 function linkCURL_DEBUG()
@@ -24,10 +21,6 @@ end
 function linkZIPPER_DEBUG()
    libdirs{"vendor/libs"}
    links {"zlib_d", "libZipper-static_d"}
-end
-function linkNANA_DEBUG()
-   libdirs{"vendor/libs"}
-   links {"nana_d"}
 end
 --DEBUG
 -- RELEASE
@@ -43,14 +36,11 @@ function linkZIPPER_RELEASE()
    libdirs{"vendor/libs"}
    links {"zlib", "libZipper-static"}
 end
-function linkNANA_RELEASE()
-   libdirs{"vendor/libs"}
-   links {"nana"}
-end
 -- RELEASE
 
 workspace "BPS"
-   configurations {"Debug", "Release", "LocalDebug", "LocalRelease"}
+   --configurations {"Debug", "Release", "LocalDebug", "LocalRelease"}
+   configurations {"Debug", "Release"}
    cppdialect "C++17"
 
 project "BPSUpdater"
@@ -80,13 +70,11 @@ project "BetterPrntScreen"
    includeCURL()
    includeLIBUI()
    includeZIPPER()
-   includeNANA()
-
+   
    filter "configurations:Debug"
       linkCURL_DEBUG()
       linkLIBUI_DEBUG()
       linkZIPPER_DEBUG()
-      linkNANA_DEBUG()
       defines { "DEBUG" }
       symbols "On"
  
@@ -94,22 +82,20 @@ project "BetterPrntScreen"
       linkCURL_RELEASE()
       linkLIBUI_RELEASE()
       linkZIPPER_RELEASE()
-      linkNANA_RELEASE()
       defines { "NDEBUG" }
       optimize "On"  
-  
+  --[[
    filter "configurations:LocalDebug"
       linkCURL_DEBUG()
       linkLIBUI_DEBUG()
       linkZIPPER_DEBUG()
-      linkNANA_DEBUG()
       defines { "DEBUG", "LOCALBUILD" }
       runtime("Debug")
 
-   filter "configurations:LocalRelease"
+  filter "configurations:LocalRelease"
       linkCURL_RELEASE()
       linkLIBUI_RELEASE()
       linkZIPPER_RELEASE()
-      linkNANA_RELEASE()
       defines { "NDEBUG", "LOCALBUILD" }
       optimize "On"  
+   ]]--

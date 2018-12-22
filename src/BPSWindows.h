@@ -40,6 +40,8 @@ namespace BetterPrntScreen
 
 			void AwaitMousePress();
 
+			bool AwaitKeyRelease(int keyCode);
+
 			bool RegisterForStartup(const char* str);
 
 		private:
