@@ -1,12 +1,12 @@
 #include "BetterPrntScreen.h"
 #include <filesystem>
-#include <ui.h>
 
 namespace BPS = ::BetterPrntScreen;
 
 //Defined on the stack, per system based.
 std::shared_ptr<BPS::ISystem> SystemCore;
 std::shared_ptr<BPS::INotifyIcon> NotificationIcon;
+bool normalSS = false;
 
 int main(int argc, char *argv[]) {
 	if (argv[1]) {
@@ -41,12 +41,12 @@ int main(int argc, char *argv[]) {
 		}
 	}
 #endif
-	bool test;
 	std::thread notiThread(&BPS::INotifyIcon::Init, NotificationIcon);
 
 	while (!SystemCore->ShouldShutdown()) {
 		if (SystemCore->IsKeyPressed(VK_SNAPSHOT)) {
-			while (SystemCore->IsKeyPressed(VK_SNAPSHOT)) {
+			normalSS = true;
+			while (SystemCore->IsKeyDown(VK_SNAPSHOT)) {
 				if (SystemCore->IsKeyPressed(VK_LBUTTON)) {
 					GeneralLog("Click SS cycle started!")
 					BPS::Point p1 = SystemCore->GetCursorPosition();
@@ -57,12 +57,16 @@ int main(int argc, char *argv[]) {
 					GeneralLog("Clicked twice")
 					std::string path = SystemCore->CaptureSnapShotBetween(p1, p2);
 					Network::uploadFileToServer(path.c_str());
+					normalSS = false;
+					break;
 				}
-				break;
 			}
 		}
-
-		test = false;
+		if (normalSS) {
+			normalSS = false;
+			std::string path = SystemCore->CaptureSnapShot();
+			Network::uploadFileToServer(path.c_str());
+		}
 		Sleep(1);
 	}
 

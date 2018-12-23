@@ -56,9 +56,18 @@ namespace BetterPrntScreen
 			return -1;  // Failure
 		}
 
-		bool BPSWindows::IsKeyPressed(const int keyCode)
+		bool BPSWindows::IsKeyDown(const int keyCode)
 		{
 			return (GetAsyncKeyState(keyCode) & (1 << 16));
+		}
+
+		bool BPSWindows::IsKeyPressed(int keyCode)
+		{
+			bool previousState = keyCodeHandler[keyCode];
+
+			keyCodeHandler[keyCode] = IsKeyDown(keyCode);
+
+			return (keyCodeHandler[keyCode] && !previousState);
 		}
 
 		bool BPSWindows::IsKeyReleased(const int keyCode)

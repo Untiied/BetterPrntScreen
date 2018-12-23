@@ -29,6 +29,8 @@ namespace BetterPrntScreen
 		//Check for key pressed callback
 		virtual bool IsKeyPressed(int keycode) = 0;
 
+		virtual bool IsKeyDown(int keycode) = 0;
+
 		virtual bool IsKeyReleased(int keycode) = 0;
 
 		virtual void AwaitMousePress() = 0;

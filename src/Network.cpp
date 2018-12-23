@@ -2,10 +2,7 @@
 #include "Logger.h"
 #include <curl/curl.h>
 
-const char* Network::localUpload = "http://192.168.1.91/upload";
 const char* Network::outerUpload = "http://betterprntscreen.com/upload";
-
-std::string Network::localHostname = "http://192.168.1.91/";
 std::string Network::outerHostname = "http://betterprntscreen.com/";
 
 static size_t WriteCallback(char *contents, size_t size, size_t nmemb, void *userp)
@@ -31,11 +28,7 @@ std::string Network::getServerClientVersion() {
 	CURLcode response;
 	std::string responseFromServer;
 
-#if LOCALBUILD
-	curl_easy_setopt(curlhash, CURLOPT_URL, std::string(localHostname + "api/clientVersion").c_str());
-#else
 	curl_easy_setopt(curlhash, CURLOPT_URL, std::string(outerHostname + "api/clientVersion").c_str());
-#endif 
 	curl_easy_setopt(curlhash, CURLOPT_WRITEFUNCTION, WriteCallback);
 	curl_easy_setopt(curlhash, CURLOPT_WRITEDATA, &responseFromServer);
 	response = curl_easy_perform(curlhash);
@@ -59,11 +52,7 @@ bool Network::downloadNewestUpdate(std::string fileName) {
 	  NULL
 	};
 
-#if LOCALBUILD
-	curl_easy_setopt(curlhash, CURLOPT_URL, std::string(localHostname + "api/download/" + fileName).c_str());
-#else
 	curl_easy_setopt(curlhash, CURLOPT_URL, std::string(outerHostname + "api/download/" + fileName).c_str());
-#endif 
 	curl_easy_setopt(curlhash, CURLOPT_WRITEFUNCTION, WriteFileCallback);
 	curl_easy_setopt(curlhash, CURLOPT_WRITEDATA, &ftpfile);
 	response = curl_easy_perform(curlhash);
@@ -91,12 +80,8 @@ void Network::uploadFileToServer(const char* path) {
 	CURL *curlhash = curl_easy_init();
 	CURLcode response;
 	std::string link;
-#if LOCALBUILD
-	curl_easy_setopt(curlhash, CURLOPT_URL, localUpload);
-#else
-	curl_easy_setopt(curlhash, CURLOPT_URL, outerUpload);
-#endif // LOCALBUILD
 
+	curl_easy_setopt(curlhash, CURLOPT_URL, outerUpload);
 	curl_easy_setopt(curlhash, CURLOPT_WRITEFUNCTION, WriteCallback);
 	curl_easy_setopt(curlhash, CURLOPT_WRITEDATA, &link);
 	curl_formadd(&post, &last,

@@ -36,6 +36,8 @@ namespace BetterPrntScreen
 
 			bool IsKeyPressed(const int keyCode);
 
+			bool IsKeyDown(const int keyCode);
+
 			bool IsKeyReleased(const int keyCode);
 
 			void AwaitMousePress();
