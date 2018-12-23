@@ -105,11 +105,11 @@ namespace BetterPrntScreen
 			BITMAP				bmpScreen;
 			RECT				windowsize;
 
-			hwindowDC = GetDC(m_WindowsDesktopWindow);
+			hwindowDC = GetDC(GetActiveDesktopWindow());
 			hwindowCompatibleDC = CreateCompatibleDC(hwindowDC);
 			SetStretchBltMode(hwindowCompatibleDC, COLORONCOLOR);
 
-			GetClientRect(m_WindowsDesktopWindow, &windowsize);
+			GetClientRect(GetActiveDesktopWindow(), &windowsize);
 
 			height = windowsize.bottom;
 			width = windowsize.right;
@@ -141,7 +141,7 @@ namespace BetterPrntScreen
 
 			DeleteObject(hbwindow);
 			DeleteDC(hwindowCompatibleDC);
-			ReleaseDC(m_WindowsDesktopWindow, hwindowDC);
+			ReleaseDC(GetActiveDesktopWindow(), hwindowDC);
 
 			// Anything from here on is strictly using the GDI api.
 			Gdiplus::Bitmap* screenBitmap = Gdiplus::Bitmap::FromBITMAPINFO((BITMAPINFO*)&bi, &bits[0]);
@@ -177,11 +177,11 @@ namespace BetterPrntScreen
 			BITMAP				bmpScreen;
 			RECT				windowsize;
 
-			hwindowDC = GetDC(m_WindowsDesktopWindow);
+			hwindowDC = GetDC(GetActiveDesktopWindow());
 			hwindowCompatibleDC = CreateCompatibleDC(hwindowDC);
 			SetStretchBltMode(hwindowCompatibleDC, COLORONCOLOR);
 
-			GetClientRect(m_WindowsDesktopWindow, &windowsize);
+			GetClientRect(GetActiveDesktopWindow(), &windowsize);
 
 			height = lowerBound.y - upperBound.y;
 			width = lowerBound.x - upperBound.x;
@@ -213,7 +213,7 @@ namespace BetterPrntScreen
 
 			DeleteObject(hbwindow);
 			DeleteDC(hwindowCompatibleDC);
-			ReleaseDC(m_WindowsDesktopWindow, hwindowDC);
+			ReleaseDC(GetActiveDesktopWindow(), hwindowDC);
 
 			// Anything from here on is strictly using the GDI api.
 			Gdiplus::Bitmap* screenBitmap = Gdiplus::Bitmap::FromBITMAPINFO((BITMAPINFO*)&bi, &bits[0]);
@@ -238,7 +238,7 @@ namespace BetterPrntScreen
 		std::string BPSWindows::GetAppDataPath()
 		{
 			TCHAR buffer[MAX_PATH];
-			BOOL result = SHGetSpecialFolderPath(m_WindowsDesktopWindow, buffer, CSIDL_LOCAL_APPDATA, false);
+			BOOL result = SHGetSpecialFolderPath(GetActiveDesktopWindow(), buffer, CSIDL_LOCAL_APPDATA, false);
 			if (!result)
 				return std::string();
 			std::wstring wide(buffer);
@@ -309,6 +309,38 @@ namespace BetterPrntScreen
 			}
 
 			return fSuccess;
+		}
+
+		static struct MONITORDATA
+		{
+			std::vector<RECT> Monitors;
+		};
+
+		BOOL CALLBACK MonitorEnum(HMONITOR hMon, HDC hdc, LPRECT lprcMonitor, LPARAM pData)
+		{
+			MONITORDATA *_MONITORS = reinterpret_cast<MONITORDATA*>(pData);
+			_MONITORS->Monitors.push_back(*lprcMonitor);
+			return TRUE;
+		}
+
+		HWND BPSWindows::GetActiveDesktopWindow()
+		{
+			MONITORDATA monitorData;
+
+			POINT cursorPoint = {};
+			GetCursorPos(&cursorPoint);
+
+			EnumDisplayMonitors(0 ,0, &MonitorEnum, (LPARAM)&monitorData);
+
+			RECT selectedMonitor;
+			for (auto &monitor : monitorData.Monitors) {
+				if (cursorPoint.x > monitor.left && cursorPoint.x < monitor.right)
+				{
+					selectedMonitor = monitor;
+				}
+			}
+
+			return GetDesktopWindow();
 		}
 	}
 }

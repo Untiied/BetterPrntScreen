@@ -48,7 +48,7 @@ namespace BetterPrntScreen
 
 		private:
 			ULONG_PTR m_GdiPlusToken;
-			HWND m_WindowsDesktopWindow = GetDesktopWindow();
+			HWND GetActiveDesktopWindow();
 			Gdiplus::GdiplusStartupInput m_GdiPlusStartupInput;
 			const std::string m_ScreenshotsAppdataFolder = GetAppDataPath() + m_ApplicationNamePathed + "screenshots/";
 		};
