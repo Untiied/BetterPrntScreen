@@ -44,7 +44,7 @@ namespace BetterPrntScreen
 
 			bool AwaitKeyRelease(const int keyCode);
 
-			bool RegisterForStartup(const char* str);
+			bool RegisterForStartup(const char* Str);
 
 		private:
 			CLSID EncoderClsid;

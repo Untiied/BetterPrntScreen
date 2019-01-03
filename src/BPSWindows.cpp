@@ -52,11 +52,6 @@ namespace BetterPrntScreen
 			CreateDirectory(StringtoWString(std::string(GetAppDataPath() + ApplicationNamePathed + "/logs/")).c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError();
 			Gdiplus::GdiplusStartup(&GdiPlusToken, &GdiPlusStartupInput, NULL);
 			GetEncoderClsid(L"image/png", &EncoderClsid);
-
-			for (unsigned int i = 0; i < (int)sizeof(KeyCodeHandler); ++i)
-			{
-				KeyCodeHandler[i] = IsKeyPressed(i);
-			}
 		}
 
 		BPSWindows::~BPSWindows() {
@@ -276,7 +271,7 @@ namespace BetterPrntScreen
 			Logger::ReleaseLog(std::string(GetAppDataPath() + ApplicationNamePathed + "/logs/").c_str(), Utilities::CurrentDateTime());
 		}
 
-		bool BPSWindows::RegisterForStartup(const char* str)
+		bool BPSWindows::RegisterForStartup(const char* Str)
 		{
 			HKEY hKey = NULL;
 			LONG lResult = 0;
@@ -286,7 +281,7 @@ namespace BetterPrntScreen
 
 			const size_t count = MAX_PATH * 2;
 			wchar_t szValue[count] = {};
-			std::wstring pathToExe = StringtoWString(std::string(str));
+			std::wstring pathToExe = StringtoWString(std::string(Str));
 			wcscpy_s(szValue, count, L"\"");
 			wcscat_s(szValue, count, pathToExe.c_str());
 			wcscat_s(szValue, count, L"\" ");
