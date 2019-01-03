@@ -18,7 +18,7 @@ namespace BetterPrntScreen
 		class BPSWindows : public ISystem {
 		public:
 			BPSWindows::BPSWindows();
-			BPSWindows::~BPSWindows();
+			BPSWindows::~BPSWindows() override;
 
 			std::string GetAppDataPath();
 
@@ -42,15 +42,16 @@ namespace BetterPrntScreen
 
 			void AwaitMousePress();
 
-			bool AwaitKeyRelease(int keyCode);
+			bool AwaitKeyRelease(const int keyCode);
 
 			bool RegisterForStartup(const char* str);
 
 		private:
-			ULONG_PTR m_GdiPlusToken;
-			HWND GetActiveDesktopWindow();
-			Gdiplus::GdiplusStartupInput m_GdiPlusStartupInput;
-			const std::string m_ScreenshotsAppdataFolder = GetAppDataPath() + m_ApplicationNamePathed + "screenshots/";
+			CLSID EncoderClsid;
+			ULONG_PTR GdiPlusToken;
+			RECT GetActiveDesktopWindow();
+			Gdiplus::GdiplusStartupInput GdiPlusStartupInput;
+			const std::string ScreenshotsAppdataFolder = GetAppDataPath() + ApplicationNamePathed + "screenshots/";
 		};
 	}
 }

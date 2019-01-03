@@ -47,10 +47,10 @@ namespace BetterPrntScreen
 
 					case UPDATE_ID:
 					{
-						if (Updater::isUpdateAvaliable()) {
-							std::string newestUpdate = Network::getServerClientVersion() + ".zip";
-							if (Updater::attemptUpdateDownload(std::string(newestUpdate))) {
-								if (Updater::unpackUpdate("BPSUpdate.zip")) {
+						if (Updater::IsUpdateAvaliable()) {
+							std::string newestUpdate = Network::GetServerClientVersion() + ".zip";
+							if (Updater::AttemptUpdateDownload(std::string(newestUpdate))) {
+								if (Updater::UnpackUpdate("BPSUpdate.zip")) {
 									ISystem::SetShutdownFlag(true);
 									ISystem::SetUpdateFlag(true);
 								}

@@ -5,6 +5,7 @@ namespace BetterPrntScreen
 
 	class INotifyIcon {
 	public:
+		virtual ~INotifyIcon() {};
 		virtual void Init() = 0;
 		virtual void Cycle() = 0;
 		virtual bool SendToNotificationArea() = 0;

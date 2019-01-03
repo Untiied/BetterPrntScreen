@@ -6,39 +6,28 @@ namespace BetterPrntScreen
 {
 	namespace Windows
 	{
-		BPSWindows::BPSWindows()
+		static struct MONITORDATA
 		{
-			CreateDirectory(StringtoWString(std::string(GetAppDataPath() + m_ApplicationNamePathed)).c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError();
-			CreateDirectory(StringtoWString(std::string(GetAppDataPath() + m_ApplicationNamePathed + "/screenshots/")).c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError();
-			CreateDirectory(StringtoWString(std::string(GetAppDataPath() + m_ApplicationNamePathed + "/logs/")).c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError();
-			Gdiplus::GdiplusStartup(&m_GdiPlusToken, &m_GdiPlusStartupInput, NULL);
+			std::vector<RECT> Monitors;
+			std::vector<HDC> HDCMonitors;
+		};
 
-			for (unsigned int i = 0; i < (int)sizeof(keyCodeHandler); ++i)
-			{
-				keyCodeHandler[i] = IsKeyPressed(i);
-			}
-		}
-
-		BPSWindows::~BPSWindows() {
-			Gdiplus::GdiplusShutdown(m_GdiPlusToken);
-			//DisposeLogFile();
-		}
-
-		int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
+		//From Windows api documentation.
+		static int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 		{
 			using namespace Gdiplus;
-			UINT  num = 0;          // number of image encoders
-			UINT  size = 0;         // size of the image encoder array in bytes
+			UINT  num = 0;
+			UINT  size = 0;
 
 			ImageCodecInfo* pImageCodecInfo = NULL;
 
 			GetImageEncodersSize(&num, &size);
 			if (size == 0)
-				return -1;  // Failure
+				return -1;
 
 			pImageCodecInfo = (ImageCodecInfo*)(malloc(size));
 			if (pImageCodecInfo == NULL)
-				return -1;  // Failure
+				return -1;
 
 			GetImageEncoders(num, size, pImageCodecInfo);
 
@@ -48,35 +37,54 @@ namespace BetterPrntScreen
 				{
 					*pClsid = pImageCodecInfo[j].Clsid;
 					free(pImageCodecInfo);
-					return j;  // Success
+					return j;
 				}
 			}
 
 			free(pImageCodecInfo);
-			return -1;  // Failure
+			return -1;
+		}
+		
+		BPSWindows::BPSWindows()
+		{
+			CreateDirectory(StringtoWString(std::string(GetAppDataPath() + ApplicationNamePathed)).c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError();
+			CreateDirectory(StringtoWString(std::string(GetAppDataPath() + ApplicationNamePathed + "/screenshots/")).c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError();
+			CreateDirectory(StringtoWString(std::string(GetAppDataPath() + ApplicationNamePathed + "/logs/")).c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError();
+			Gdiplus::GdiplusStartup(&GdiPlusToken, &GdiPlusStartupInput, NULL);
+			GetEncoderClsid(L"image/png", &EncoderClsid);
+
+			for (unsigned int i = 0; i < (int)sizeof(KeyCodeHandler); ++i)
+			{
+				KeyCodeHandler[i] = IsKeyPressed(i);
+			}
 		}
 
-		bool BPSWindows::IsKeyDown(const int keyCode)
-		{
-			return (GetAsyncKeyState(keyCode) & (1 << 16));
+		BPSWindows::~BPSWindows() {
+			Gdiplus::GdiplusShutdown(GdiPlusToken);
+			DisposeLogFile();
 		}
 
-		bool BPSWindows::IsKeyPressed(int keyCode)
+		bool BPSWindows::IsKeyDown(const int KeyCode)
 		{
-			bool previousState = keyCodeHandler[keyCode];
-
-			keyCodeHandler[keyCode] = IsKeyDown(keyCode);
-
-			return (keyCodeHandler[keyCode] && !previousState);
+			return (GetAsyncKeyState(KeyCode) & (1 << 16));
 		}
 
-		bool BPSWindows::IsKeyReleased(const int keyCode)
+		bool BPSWindows::IsKeyPressed(const int KeyCode)
 		{
-			bool previousState = keyCodeHandler[keyCode];
+			bool PreviousState = KeyCodeHandler[KeyCode];
 
-			keyCodeHandler[keyCode] = IsKeyPressed(keyCode);
+			KeyCodeHandler[KeyCode] = IsKeyDown(KeyCode);
 
-			return (!keyCodeHandler[keyCode] && previousState);
+			return (KeyCodeHandler[KeyCode] && !PreviousState);
+		}
+
+		bool BPSWindows::IsKeyReleased(const int KeyCode)
+		{
+			bool PreviousState = KeyCodeHandler[KeyCode];
+
+			KeyCodeHandler[KeyCode] = IsKeyPressed(KeyCode);
+
+			return (!KeyCodeHandler[KeyCode] && PreviousState);
 		}
 
 		void BPSWindows::AwaitMousePress()
@@ -86,159 +94,158 @@ namespace BetterPrntScreen
 			}
 		}
 
-		bool BPSWindows::AwaitKeyRelease(int keyCode)
+		bool BPSWindows::AwaitKeyRelease(const int KeyCode)
 		{
-			while (IsKeyPressed(keyCode)) {
+			while (IsKeyPressed(KeyCode)) {
 				Sleep(1);
 			}
+
 			return true;
 		}
 
 		std::string BPSWindows::CaptureSnapShot()
 		{
-			bool				isSuccessful = false;
-			HDC					hwindowDC, hwindowCompatibleDC;
-			int					height, width;
-			HBITMAP				hbwindow;
-			BITMAPINFOHEADER	bi;
-			BITMAPFILEHEADER	bmfHeader;
-			BITMAP				bmpScreen;
-			RECT				windowsize;
+			HDC					HWindowCompatibleDC;
+			int					Height, Width;
+			HBITMAP				HbWindow;
+			BITMAPINFOHEADER	BiInfo;
+			BITMAPFILEHEADER	BmfHeader;
+			BITMAP				BmpScreen;
+			RECT				WindowSize;
 
-			hwindowDC = GetDC(GetActiveDesktopWindow());
-			hwindowCompatibleDC = CreateCompatibleDC(hwindowDC);
-			SetStretchBltMode(hwindowCompatibleDC, COLORONCOLOR);
+			HWindowCompatibleDC = CreateCompatibleDC(GetDC(0));
+			SetStretchBltMode(HWindowCompatibleDC, COLORONCOLOR);
 
-			GetClientRect(GetActiveDesktopWindow(), &windowsize);
+			WindowSize = GetActiveDesktopWindow();
 
-			height = windowsize.bottom;
-			width = windowsize.right;
+			Height = WindowSize.bottom;
+			Width = abs(WindowSize.right - WindowSize.left);
 
-			// create a bitmap
-			hbwindow = CreateCompatibleBitmap(hwindowDC, width, height);
-			GetObject(hbwindow, sizeof(BITMAP), &bmpScreen);
+			HbWindow = CreateCompatibleBitmap(GetDC(0), Width, Height);
+			GetObject(HbWindow, sizeof(BITMAP), &BmpScreen);
 
-			bi.biSize = sizeof(BITMAPINFOHEADER);    //http://msdn.microsoft.com/en-us/library/windows/window/dd183402%28v=vs.85%29.aspx
-			bi.biWidth = bmpScreen.bmWidth;//width;
-			bi.biHeight = bmpScreen.bmHeight;//-height;  //this is the line that makes it draw upside down or not
-			bi.biPlanes = 1;
-			bi.biBitCount = 32;
-			bi.biCompression = BI_RGB;
-			bi.biSizeImage = 0;
-			bi.biXPelsPerMeter = 0;
-			bi.biYPelsPerMeter = 0;
-			bi.biClrUsed = 0;
-			bi.biClrImportant = 0;
+			BiInfo.biSize = sizeof(BITMAPINFOHEADER);
+			BiInfo.biWidth = BmpScreen.bmWidth;
+			BiInfo.biHeight = BmpScreen.bmHeight;
+			BiInfo.biPlanes = 1;
+			BiInfo.biBitCount = 32;
+			BiInfo.biCompression = BI_RGB;
+			BiInfo.biSizeImage = 0;
+			BiInfo.biXPelsPerMeter = 0;
+			BiInfo.biYPelsPerMeter = 0;
+			BiInfo.biClrUsed = 0;
+			BiInfo.biClrImportant = 0;
 
-			// use the previously created device context with the bitmap
-			SelectObject(hwindowCompatibleDC, hbwindow);
-			// copy from the window device context to the bitmap device context
-			StretchBlt(hwindowCompatibleDC, 0, 0, width, height, hwindowDC, 0, 0, width, height, SRCCOPY); //change SRCCOPY to NOTSRCCOPY for wacky colors !
+			SelectObject(HWindowCompatibleDC, HbWindow);
+			StretchBlt(HWindowCompatibleDC, 0, 0, Width, Height, GetDC(0), WindowSize.left, 0, Width, Height, SRCCOPY);
 
-			DWORD dwBmpSize = ((bmpScreen.bmWidth * bi.biBitCount + 31) / 32) * 4 * bmpScreen.bmHeight;
-			std::vector<char> bits(dwBmpSize);
-			GetDIBits(hwindowCompatibleDC, hbwindow, 0, bmpScreen.bmHeight, &bits[0], (BITMAPINFO*)&bi, DIB_RGB_COLORS);  //copy from hwindowCompatibleDC to hbwindow
+			DWORD DwBmpSize = ((BmpScreen.bmWidth * BiInfo.biBitCount + 31) / 32) * 4 * BmpScreen.bmHeight;
+			std::vector<char> Bits(DwBmpSize);
+			GetDIBits(HWindowCompatibleDC, HbWindow, 0, BmpScreen.bmHeight, &Bits[0], (BITMAPINFO*)&BiInfo, DIB_RGB_COLORS);
 
-			DeleteObject(hbwindow);
-			DeleteDC(hwindowCompatibleDC);
-			ReleaseDC(GetActiveDesktopWindow(), hwindowDC);
+			/* Clean up the window's objects. */
+			DeleteObject(HbWindow);
+			DeleteDC(HWindowCompatibleDC);
 
-			// Anything from here on is strictly using the GDI api.
-			Gdiplus::Bitmap* screenBitmap = Gdiplus::Bitmap::FromBITMAPINFO((BITMAPINFO*)&bi, &bits[0]);
-
-			CLSID encoderClsid;
-			GetEncoderClsid(L"image/png", &encoderClsid);
-			std::string pngfilepath = m_ScreenshotsAppdataFolder + "screenshot" + "-" + Utilities::currentDateTime() + ".png";
-			screenBitmap->Save(StringtoWString(pngfilepath).c_str(), &encoderClsid);
-
-			return pngfilepath;
+			Gdiplus::Bitmap* ScreenBitmap = Gdiplus::Bitmap::FromBITMAPINFO((BITMAPINFO*)&BiInfo, &Bits[0]);
+			std::string ScreenshotFilePath = ScreenshotsAppdataFolder + "screenshot" + "-" + Utilities::CurrentDateTime() + ".png";
+			ScreenBitmap->Save(StringtoWString(ScreenshotFilePath).c_str(), &EncoderClsid);
+			return ScreenshotFilePath;
 		}
 
-		std::string BPSWindows::CaptureSnapShotBetween(Point bound1, Point bound2)
+		std::string BPSWindows::CaptureSnapShotBetween(Point BoundOne, Point BoundTwo)
 		{
-			Point upperBound;
-			Point lowerBound;
-			if (bound1.y <= bound2.y) {
-				upperBound = bound1;
-				lowerBound = bound2;
+			HDC					HWindowCompatibleDC;
+			int					Height, Width;
+			HBITMAP				HbWindow;
+			BITMAPINFOHEADER	BiInfo;
+			BITMAPFILEHEADER	BmfHeader;
+			BITMAP				BmpScreen;
+			RECT				WindowSize;
+
+			Point UpperBound;
+			Point LowerBound;
+
+			if (BoundTwo.y < BoundOne.y && BoundTwo.x < BoundOne.x)
+			{
+				UpperBound = BoundTwo;
+				LowerBound = BoundOne;
 			}
-			else {
-				upperBound = bound2;
-				lowerBound = bound1;
+			else if(BoundTwo.y < BoundOne.y && BoundTwo.x > BoundOne.x) 
+			{
+				UpperBound.y = BoundTwo.y;
+				UpperBound.x = BoundOne.x;
+
+				LowerBound.y = BoundOne.y;
+				LowerBound.x = BoundTwo.x;
+			}
+			else if (BoundTwo.y > BoundOne.y && BoundTwo.x < BoundOne.x)
+			{
+				UpperBound.y = BoundOne.y;
+				UpperBound.x = BoundTwo.x;
+
+				LowerBound.y = BoundTwo.y;
+				LowerBound.x = BoundOne.x;
+			} 
+			else if (BoundTwo.y > BoundOne.y && BoundTwo.x > BoundOne.x)
+			{
+				UpperBound = BoundOne;
+				LowerBound = BoundTwo;
 			}
 
+			HWindowCompatibleDC = CreateCompatibleDC(GetDC(0));
+			SetStretchBltMode(HWindowCompatibleDC, COLORONCOLOR);
 
-			bool				isSuccessful = false;
-			HDC					hwindowDC, hwindowCompatibleDC;
-			int					height, width;
-			HBITMAP				hbwindow;
-			BITMAPINFOHEADER	bi;
-			BITMAPFILEHEADER	bmfHeader;
-			BITMAP				bmpScreen;
-			RECT				windowsize;
+			WindowSize = GetActiveDesktopWindow();
+			Height = LowerBound.y - UpperBound.y;
+			Width = abs(UpperBound.x - LowerBound.x);
 
-			hwindowDC = GetDC(GetActiveDesktopWindow());
-			hwindowCompatibleDC = CreateCompatibleDC(hwindowDC);
-			SetStretchBltMode(hwindowCompatibleDC, COLORONCOLOR);
+			HbWindow = CreateCompatibleBitmap(GetDC(0), Width, Height);
+			GetObject(HbWindow, sizeof(BITMAP), &BmpScreen);
 
-			GetClientRect(GetActiveDesktopWindow(), &windowsize);
+			BiInfo.biSize = sizeof(BITMAPINFOHEADER);
+			BiInfo.biWidth = Width;
+			BiInfo.biHeight = Height;
+			BiInfo.biPlanes = 1;
+			BiInfo.biBitCount = 32;
+			BiInfo.biCompression = BI_RGB;
+			BiInfo.biSizeImage = 0;
+			BiInfo.biXPelsPerMeter = 0;
+			BiInfo.biYPelsPerMeter = 0;
+			BiInfo.biClrUsed = 0;
+			BiInfo.biClrImportant = 0;
 
-			height = lowerBound.y - upperBound.y;
-			width = lowerBound.x - upperBound.x;
+			SelectObject(HWindowCompatibleDC, HbWindow);
 
-			// create a bitmap
-			hbwindow = CreateCompatibleBitmap(hwindowDC, width, height);
-			GetObject(hbwindow, sizeof(BITMAP), &bmpScreen);
+			StretchBlt(HWindowCompatibleDC, 0, 0, Width, Height, GetDC(0), UpperBound.x, UpperBound.y, Width, Height, SRCCOPY);
 
-			bi.biSize = sizeof(BITMAPINFOHEADER);    //http://msdn.microsoft.com/en-us/library/windows/window/dd183402%28v=vs.85%29.aspx
-			bi.biWidth = width;
-			bi.biHeight = height;  //this is the line that makes it draw upside down or not
-			bi.biPlanes = 1;
-			bi.biBitCount = 32;
-			bi.biCompression = BI_RGB;
-			bi.biSizeImage = 0;
-			bi.biXPelsPerMeter = 0;
-			bi.biYPelsPerMeter = 0;
-			bi.biClrUsed = 0;
-			bi.biClrImportant = 0;
+			DWORD DwBmpSize = ((Width * BiInfo.biBitCount + 31) / 32) * 4 * Height;
+			std::vector<char> Bits(DwBmpSize);
+			GetDIBits(HWindowCompatibleDC, HbWindow, 0, Height, &Bits[0], (BITMAPINFO*)&BiInfo, DIB_RGB_COLORS);
 
-			// use the previously created device context with the bitmap
-			SelectObject(hwindowCompatibleDC, hbwindow);
-			// copy from the window device context to the bitmap device context
-			StretchBlt(hwindowCompatibleDC, 0, 0, width, height, hwindowDC, upperBound.x, upperBound.y, width, height, SRCCOPY); //change SRCCOPY to NOTSRCCOPY for wacky colors !
+			/* Clean up the window's objects. */
+			DeleteObject(HbWindow);
+			DeleteDC(HWindowCompatibleDC);
 
-			DWORD dwBmpSize = ((width * bi.biBitCount + 31) / 32) * 4 * height;
-			std::vector<char> bits(dwBmpSize);
-			GetDIBits(hwindowCompatibleDC, hbwindow, 0, height, &bits[0], (BITMAPINFO*)&bi, DIB_RGB_COLORS);  //copy from hwindowCompatibleDC to hbwindow
-
-			DeleteObject(hbwindow);
-			DeleteDC(hwindowCompatibleDC);
-			ReleaseDC(GetActiveDesktopWindow(), hwindowDC);
-
-			// Anything from here on is strictly using the GDI api.
-			Gdiplus::Bitmap* screenBitmap = Gdiplus::Bitmap::FromBITMAPINFO((BITMAPINFO*)&bi, &bits[0]);
-
-			CLSID encoderClsid;
-			GetEncoderClsid(L"image/png", &encoderClsid);
-			std::string pngfilepath = m_ScreenshotsAppdataFolder + "screenshot" + "-" + Utilities::currentDateTime() + ".png";
-			screenBitmap->Save(StringtoWString(pngfilepath).c_str(), &encoderClsid);
-
-			return pngfilepath;
+			Gdiplus::Bitmap* ScreenBitmap = Gdiplus::Bitmap::FromBITMAPINFO((BITMAPINFO*)&BiInfo, &Bits[0]);
+			std::string ScreenshotFilePath = ScreenshotsAppdataFolder + "screenshot" + "-" + Utilities::CurrentDateTime() + ".png";
+			ScreenBitmap->Save(StringtoWString(ScreenshotFilePath).c_str(), &EncoderClsid);
+			return ScreenshotFilePath;
 		}
 
 		Point BPSWindows::GetCursorPosition()
 		{
-			POINT cursorPoint;
-			if (GetCursorPos(&cursorPoint))
+			POINT CursorPoint;
+			if (GetCursorPos(&CursorPoint))
 			{
-				return Point(cursorPoint.x, cursorPoint.y);
+				return Point(CursorPoint.x, CursorPoint.y);
 			}
 		}
 
 		std::string BPSWindows::GetAppDataPath()
 		{
 			TCHAR buffer[MAX_PATH];
-			BOOL result = SHGetSpecialFolderPath(GetActiveDesktopWindow(), buffer, CSIDL_LOCAL_APPDATA, false);
+			BOOL result = SHGetSpecialFolderPath(GetDesktopWindow(), buffer, CSIDL_LOCAL_APPDATA, false);
 			if (!result)
 				return std::string();
 			std::wstring wide(buffer);
@@ -249,7 +256,7 @@ namespace BetterPrntScreen
 		{
 			const unsigned long maxDir = 260;
 			char currentDir[maxDir];
-			::GetCurrentDirectoryA(maxDir, currentDir);
+			GetCurrentDirectoryA(maxDir, currentDir);
 			return std::string(currentDir);
 		}
 
@@ -266,7 +273,7 @@ namespace BetterPrntScreen
 
 		void BPSWindows::DisposeLogFile()
 		{
-			Logger::ReleaseLog(std::string(GetAppDataPath() + m_ApplicationNamePathed + "/logs/").c_str(), Utilities::currentDateTime());
+			Logger::ReleaseLog(std::string(GetAppDataPath() + ApplicationNamePathed + "/logs/").c_str(), Utilities::CurrentDateTime());
 		}
 
 		bool BPSWindows::RegisterForStartup(const char* str)
@@ -311,36 +318,32 @@ namespace BetterPrntScreen
 			return fSuccess;
 		}
 
-		static struct MONITORDATA
-		{
-			std::vector<RECT> Monitors;
-		};
-
 		BOOL CALLBACK MonitorEnum(HMONITOR hMon, HDC hdc, LPRECT lprcMonitor, LPARAM pData)
 		{
 			MONITORDATA *_MONITORS = reinterpret_cast<MONITORDATA*>(pData);
 			_MONITORS->Monitors.push_back(*lprcMonitor);
+			_MONITORS->HDCMonitors.push_back(hdc);
 			return TRUE;
 		}
 
-		HWND BPSWindows::GetActiveDesktopWindow()
+		RECT BPSWindows::GetActiveDesktopWindow()
 		{
-			MONITORDATA monitorData;
+			MONITORDATA MonitorData;
 
-			POINT cursorPoint = {};
-			GetCursorPos(&cursorPoint);
+			POINT CursorPoint = {};
+			GetCursorPos(&CursorPoint);
 
-			EnumDisplayMonitors(0 ,0, &MonitorEnum, (LPARAM)&monitorData);
+			EnumDisplayMonitors(0 ,0, &MonitorEnum, (LPARAM)&MonitorData);
 
-			RECT selectedMonitor;
-			for (auto &monitor : monitorData.Monitors) {
-				if (cursorPoint.x > monitor.left && cursorPoint.x < monitor.right)
+			RECT SelectedMonitor;
+			for (auto &Monitor : MonitorData.Monitors) {
+				if (CursorPoint.x > Monitor.left && CursorPoint.x < Monitor.right)
 				{
-					selectedMonitor = monitor;
+					SelectedMonitor = Monitor;
 				}
 			}
 
-			return GetDesktopWindow();
+			return SelectedMonitor;
 		}
 	}
 }

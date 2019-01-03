@@ -6,32 +6,60 @@
 
 namespace BPS = ::BetterPrntScreen;
 
-bool Updater::isUpdateAvaliable()
+bool Updater::IsUpdateAvaliable()
 {
-	//Used to reduce bandwith.
-	std::string serverVersion = Network::getServerClientVersion();
-	std::string clientVersion = BPS::ISystem::GetClientVersion();
+#ifdef NDEBUG
+	std::string ServerVersion = Network::GetServerClientVersion();
+	std::string ClientVersion = BPS::ISystem::GetClientVersion();
 
-	//Converts the strings recived into the float for comparison.
-	float serverClientVersion = Utilities::versionToFloat(serverVersion);
-	float currentClientVersion = Utilities::versionToFloat(clientVersion);
+	bool Result = AreVersionsSimilar(ClientVersion, ServerVersion);
 
-	if(currentClientVersion < serverClientVersion)
+	if (Result)
 	{
-		UpdateLog("New version: %s is available.", serverVersion.c_str())
-		return true;
+		UpdateLog("Current version: %s is up to date!", ClientVersion.c_str())
+		return false;
 	}
 
-	UpdateLog("Current version: %s is up to-date.", clientVersion.c_str())
-	return false;
+	UpdateLog("Current version: %s isn't up to date!\n	  Newest version is: %s", ClientVersion.c_str(), ServerVersion.c_str())
+	return true;
+	#else if DEBUG
+		UpdateLog("No version checking was done... Must be a development build.")
+		return false;
+#endif
 }
 
-bool Updater::attemptUpdateDownload(std::string updateName)
+bool Updater::AttemptUpdateDownload(std::string updateName)
 {
-	return Network::downloadNewestUpdate(updateName);
+	return Network::DownloadNewestUpdate(updateName);
 }
 
-bool Updater::unpackUpdate(std::string updateName)
+bool Updater::UnpackUpdate(std::string updateName)
 {
 	return Utilities::unpackFile(updateName);
+}
+
+bool Updater::AreVersionsSimilar(std::string OurClientValue, std::string ServerClientValue)
+{
+	int ClientMajor = std::stoi(OurClientValue.substr(0, OurClientValue.find('.')));
+	int ClientMinor = std::stoi(OurClientValue.substr(OurClientValue.find('.') + 1, OurClientValue.find('.', OurClientValue.find('.') + 1) - 1));
+	int ClientPatch = std::stoi(OurClientValue.substr(OurClientValue.find('.', OurClientValue.find('.') + 1) + 1, OurClientValue.length()));
+
+	int ServerClientMajor = std::stoi(ServerClientValue.substr(0, ServerClientValue.find('.')));
+	int ServerClientMinor = std::stoi(ServerClientValue.substr(ServerClientValue.find('.') + 1, ServerClientValue.find('.', ServerClientValue.find('.') + 1) - 1));
+	int ServerClientPatch = std::stoi(ServerClientValue.substr(ServerClientValue.find('.', ServerClientValue.find('.') + 1) + 1, ServerClientValue.length()));
+
+	if (ClientMajor < ServerClientMajor)
+	{
+		return false;
+	}
+	if (ClientMinor < ServerClientMinor)
+	{
+		return false;
+	}
+	if (ClientPatch < ServerClientPatch)
+	{
+		return false;
+	}
+
+	return true;
 }

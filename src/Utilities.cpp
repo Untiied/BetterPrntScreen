@@ -5,7 +5,7 @@
 #define ZLIB_WINAPI
 #include <zipper/unzipper.h>
 
-std::string Utilities::currentDateTime() {
+std::string Utilities::CurrentDateTime() {
 	time_t     now = time(0);
 	struct tm  tstruct;
 	char       buf[80];
@@ -16,23 +16,13 @@ std::string Utilities::currentDateTime() {
 	return buf;
 }
 
-float Utilities::versionToFloat(std::string version)
-{
-	std::string major = version.substr(0, 1);
-	std::string minor = version.substr(2, 3);
-	std::string patch = version.substr(4, 5);
-
-	
-	return std::stof(major + minor + patch);
-}
-
 bool Utilities::unpackFile(std::string fileName)
 {
 	using namespace zipper;
 
-	Unzipper unzipper(fileName);
-	bool success = unzipper.extract("NEW");
-	unzipper.close();
+	Unzipper Unzipper(fileName);
+	bool Success = Unzipper.extract("NEW");
+	Unzipper.close();
 
-	return success;
+	return Success;
 }

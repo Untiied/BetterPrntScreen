@@ -2,13 +2,30 @@
 
 namespace BetterPrntScreen
 {
+	bool ISystem::ShutdownFlag = false;
+	bool ISystem::UpdateFlag = false;
+	std::string ISystem::ClientVersion = "0.3.5";
 
-	bool ISystem::m_ShutdownFlag = false;
-	bool ISystem::m_UpdateFlag = false;
-	std::string ISystem::m_ClientVersion = "0.2.4";
-
-	std::string const ISystem::GetClientVersion() {
-		return m_ClientVersion;
+	const std::string ISystem::GetClientVersion() {
+		return ClientVersion;
 	}
 
+	bool ISystem::ShouldShutdown()
+	{
+		return ShutdownFlag;
+	}
+
+	bool ISystem::ShouldUpdate()
+	{
+		return UpdateFlag;
+	}
+
+	void ISystem::SetShutdownFlag(bool Flag)
+	{
+		ShutdownFlag = Flag;
+	}
+
+	void ISystem::SetUpdateFlag(bool Flag) {
+		UpdateFlag = Flag;
+	}
 }

@@ -15,10 +15,10 @@ public:
 	static std::string localHostname;
 	static std::string outerHostname;
 
-	static std::string getServerClientVersion();
+	static std::string GetServerClientVersion();
 
-	static bool downloadNewestUpdate(std::string fileName);
+	static bool DownloadNewestUpdate(std::string fileName);
 
 	//During this function it upload the screenshot, and will also save the link to the clipboard.
-	static void uploadFileToServer(const char* path);
+	static void UploadFileToServer(const char* path);
 };

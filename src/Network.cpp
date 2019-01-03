@@ -23,7 +23,7 @@ static size_t WriteFileCallback(void *buffer, size_t size, size_t nmemb, void *s
 	return fwrite(buffer, size, nmemb, out->stream);
 }
 
-std::string Network::getServerClientVersion() {
+std::string Network::GetServerClientVersion() {
 	CURL *curlhash = curl_easy_init();
 	CURLcode response;
 	std::string responseFromServer;
@@ -44,7 +44,7 @@ std::string Network::getServerClientVersion() {
 	}
 }
 
-bool Network::downloadNewestUpdate(std::string fileName) {
+bool Network::DownloadNewestUpdate(std::string fileName) {
 	CURL *curlhash = curl_easy_init();
 	CURLcode response;
 	struct FtpFile ftpfile = {
@@ -74,7 +74,7 @@ bool Network::downloadNewestUpdate(std::string fileName) {
 }
 
 //During this function it upload the screenshot, and will also save the link to the clipboard.
-void Network::uploadFileToServer(const char* path) {
+void Network::UploadFileToServer(const char* path) {
 	struct curl_httppost *post = NULL;
 	struct curl_httppost *last = NULL;
 	CURL *curlhash = curl_easy_init();

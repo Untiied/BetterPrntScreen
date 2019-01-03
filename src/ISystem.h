@@ -17,6 +17,8 @@ namespace BetterPrntScreen
 
 	class ISystem {
 	public:
+		virtual ~ISystem() {};
+
 		/*
 			Each system type need to include these overrides based on the system specifications, and api's.
 
@@ -27,19 +29,19 @@ namespace BetterPrntScreen
 		*/
 
 		//Check for key pressed callback
-		virtual bool IsKeyPressed(int keycode) = 0;
+		virtual bool IsKeyPressed(const int Keycode) = 0;
 
-		virtual bool IsKeyDown(int keycode) = 0;
+		virtual bool IsKeyDown(const int Keycode) = 0;
 
-		virtual bool IsKeyReleased(int keycode) = 0;
+		virtual bool IsKeyReleased(const int keycode) = 0;
 
 		virtual void AwaitMousePress() = 0;
 
-		virtual bool AwaitKeyRelease(int keyCode) = 0;
+		virtual bool AwaitKeyRelease(const int keyCode) = 0;
 		//Needs to return the path to the file just saved.
 		virtual std::string CaptureSnapShot() = 0;
 
-		virtual std::string CaptureSnapShotBetween(Point bound1, Point bound2) = 0;
+		virtual std::string CaptureSnapShotBetween(Point PointOne, Point PointTwo) = 0;
 
 		virtual Point GetCursorPosition() = 0;
 
@@ -53,31 +55,22 @@ namespace BetterPrntScreen
 		virtual void DisposeLogFile() = 0;
 
 	public:
-		//TODO: Move these to the .cpp file.
-		static inline bool ShouldShutdown() {
-			return m_ShutdownFlag;
-		}
+		static bool ShouldShutdown();
 
-		static inline bool ShouldUpdate() {
-			return m_UpdateFlag;
-		}
+		static bool ShouldUpdate();
 
-		static inline void SetShutdownFlag(bool flag) {
-			m_ShutdownFlag = flag;
-		}
+		static void SetShutdownFlag(bool Flag);
 
-		static inline void SetUpdateFlag(bool flag) {
-			m_UpdateFlag = flag;
-		}
+		static void SetUpdateFlag(bool Flag);
 
-		bool keyCodeHandler[101];
-		const std::string m_ApplicationName = "BetterPrntScreen";
-		const std::string m_ApplicationNamePathed = "/BetterPrntScreen/";
+		bool KeyCodeHandler[101];
+		const std::string ApplicationName = "BetterPrntScreen";
+		const std::string ApplicationNamePathed = "/BetterPrntScreen/";
 		static const std::string GetClientVersion();
 	private:
-		static std::string m_ClientVersion;
-		static bool m_ShutdownFlag;
-		static bool m_UpdateFlag;
+		static std::string ClientVersion;
+		static bool ShutdownFlag;
+		static bool UpdateFlag;
 	};
 
 }
