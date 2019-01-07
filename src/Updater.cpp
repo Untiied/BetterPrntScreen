@@ -25,7 +25,7 @@ bool Updater::IsUpdateAvaliable()
 	#else if DEBUG
 		UpdateLog("No version checking was done... Must be a development build.")
 		return false;
-#endif
+	#endif
 }
 
 bool Updater::AttemptUpdateDownload(std::string updateName)
@@ -52,11 +52,11 @@ bool Updater::AreVersionsSimilar(std::string OurClientValue, std::string ServerC
 	{
 		return false;
 	}
-	if (ClientMinor < ServerClientMinor)
+	else if (ClientMinor < ServerClientMinor)
 	{
 		return false;
 	}
-	if (ClientPatch < ServerClientPatch)
+	else if (ClientPatch < ServerClientPatch && ClientMinor <= ServerClientMinor)
 	{
 		return false;
 	}

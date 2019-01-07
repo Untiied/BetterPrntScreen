@@ -95,11 +95,11 @@ void Network::UploadFileToServer(const char* path) {
 
 	if (response == CURLE_OK) {
 		NetworkLog("Successfully sent image: %s to server!", path)
-			link = link.substr(link.find(':') + 1);
+		link = link.substr(link.find(':') + 1);
 		link = outerHostname + link;
 		link = link.substr(0, link.rfind("."));
 #ifdef _WIN32
-		Sleep(500);
+		//Sleep(500);
 		const size_t len = strlen(link.c_str()) + 1;
 		HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, len);
 		memcpy(GlobalLock(hMem), link.c_str(), len);

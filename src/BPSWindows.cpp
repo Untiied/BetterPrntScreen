@@ -240,7 +240,7 @@ namespace BetterPrntScreen
 		std::string BPSWindows::GetAppDataPath()
 		{
 			TCHAR buffer[MAX_PATH];
-			BOOL result = SHGetSpecialFolderPath(GetDesktopWindow(), buffer, CSIDL_LOCAL_APPDATA, false);
+			BOOL result = SHGetSpecialFolderPath(GetDesktopWindow(), buffer, CSIDL_APPDATA , false);
 			if (!result)
 				return std::string();
 			std::wstring wide(buffer);
