@@ -7,13 +7,25 @@
 
 #define EXIT_ID 1000
 #define UPDATE_ID 1001
-
+#define UPDATE_VERSION_ID 1002
 //Dirty ownership & initilization inorder for static members to be able to access it..
 HWND hWnd;
 
 namespace BetterPrntScreen
 {
 	namespace Windows {
+
+		std::wstring BPSWindowsNotifyIcon::StringtoWString(std::string str) {
+			int len;
+			int slength = (int)str.length() + 1;
+			len = MultiByteToWideChar(CP_ACP, 0, str.c_str(), slength, 0, 0);
+			wchar_t* buf = new wchar_t[len];
+			MultiByteToWideChar(CP_ACP, 0, str.c_str(), slength, buf, len);
+			std::wstring r(buf);
+			delete[] buf;
+			return r;
+		};
+
 		//Windows api functions
 		LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
@@ -48,8 +60,7 @@ namespace BetterPrntScreen
 					case UPDATE_ID:
 					{
 						if (Updater::IsUpdateAvaliable()) {
-							std::string newestUpdate = Network::GetServerClientVersion() + ".zip";
-							if (Updater::AttemptUpdateDownload(std::string(newestUpdate))) {
+							if (Updater::AttemptUpdateDownload(Network::GetServerClientVersion() + ".zip")) {
 								if (Updater::UnpackUpdate("BPSUpdate.zip")) {
 									ISystem::SetShutdownFlag(true);
 									ISystem::SetUpdateFlag(true);
@@ -98,6 +109,10 @@ namespace BetterPrntScreen
 			AppendMenu(exitPopupMenu, MF_STRING, UPDATE_ID, _T("&Check for updates"));
 			AppendMenu(exitPopupMenu, MF_STRING, EXIT_ID, _T("&Exit"));
 
+			AppendMenu(exitPopupMenu, MF_SEPARATOR, NULL, NULL);
+
+			std::wstring ClientVersion = StringtoWString("Version: ") + StringtoWString(ISystem::GetClientVersion());
+			AppendMenu(exitPopupMenu, MF_STRING | MF_DISABLED, UPDATE_VERSION_ID, ClientVersion.c_str());
 			SetForegroundWindow(hWnd);
 
 			TrackPopupMenu(exitPopupMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_BOTTOMALIGN, pt.x, pt.y, 0, hWnd, NULL);

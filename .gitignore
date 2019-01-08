@@ -263,4 +263,4 @@ __pycache__/
 /vendor/zipper
 /vendor/libui
 /vendor/curl
-BPSUpdater.vcxproj
+*.vcxproj

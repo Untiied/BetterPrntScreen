@@ -1,5 +1,6 @@
 #pragma once
 #include "INotifyIcon.h"
+#include <string>
 #include <Windows.h>
 #include <ShlObj.h>
 #define APPWM_ICONNOTIFY (WM_APP + 1)
@@ -19,6 +20,8 @@ namespace BetterPrntScreen
 			void Cycle();
 			bool SendToNotificationArea();
 			bool RemoveFromNotificationArea();
+
+			static std::wstring StringtoWString(std::string str);
 
 			//Win api needs to call this. Not class specific.
 			static void APIENTRY DeployPopupMenu();
