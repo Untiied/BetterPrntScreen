@@ -2,8 +2,8 @@
 
 namespace BetterPrntScreen
 {
-	bool ISystem::ShutdownFlag = false;
-	bool ISystem::UpdateFlag = false;
+	bool ISystem::bShutdownFlag = false;
+	bool ISystem::bUpdateFlag = false;
 	std::string ISystem::ClientVersion = "0.4.3";
 
 	const std::string ISystem::GetClientVersion() {
@@ -12,20 +12,20 @@ namespace BetterPrntScreen
 
 	bool ISystem::ShouldShutdown()
 	{
-		return ShutdownFlag;
+		return bShutdownFlag;
 	}
 
 	bool ISystem::ShouldUpdate()
 	{
-		return UpdateFlag;
+		return bUpdateFlag;
 	}
 
 	void ISystem::SetShutdownFlag(bool Flag)
 	{
-		ShutdownFlag = Flag;
+		bShutdownFlag = Flag;
 	}
 
 	void ISystem::SetUpdateFlag(bool Flag) {
-		UpdateFlag = Flag;
+		bUpdateFlag = Flag;
 	}
 }

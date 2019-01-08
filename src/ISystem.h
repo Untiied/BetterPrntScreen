@@ -88,8 +88,8 @@ namespace BetterPrntScreen
 		static const std::string GetClientVersion();
 	private:
 		static std::string ClientVersion;
-		static bool ShutdownFlag;
-		static bool UpdateFlag;
+		static bool bShutdownFlag;
+		static bool bUpdateFlag;
 	};
 
 }
