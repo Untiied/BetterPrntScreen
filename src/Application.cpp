@@ -19,12 +19,17 @@ int main(int argc, char *argv[])
 		//Starts up the core of the system. For Windows.
 		SystemCore = std::make_shared<BPS::Windows::BPSWindows>();
 		NotificationIcon = std::make_shared<BPS::Windows::BPSWindowsNotifyIcon>();
+
+		//Creates a seperate thread for the WindowsProcess to exist. This is because OS polling runs events need to be looped. Taking over the main thread.
+		std::thread WindowsThread(&BPS::Windows::WindowsProc::Init);
 	#ifdef NDEBUG
 		ShowWindow(GetConsoleWindow(), SW_HIDE);
 	#else
 		ShowWindow(GetConsoleWindow(), SW_SHOW);
 	#endif 
 	#endif
+
+	NotificationIcon->SendToNotificationArea();
 
 	// Asks the SystemCore to register the application for a runtime startup. 
 	if (SystemCore->RegisterForStartup(argv[0])) {
@@ -42,9 +47,6 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
-
-	//Creates a seperate thread for the Notification Icon to exist. This is because OS polling runs events need to be looped. Taking over the main thread.
-	std::thread NotiThread(&BPS::INotifyIcon::Init, NotificationIcon);
 
 	while (!SystemCore->ShouldShutdown())
 	{
@@ -85,8 +87,9 @@ int main(int argc, char *argv[])
 		// Sleep is only here to tell the system to relax and not use CPU cycles on our program until we get a key press.
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
-
-	NotiThread.join();
+#ifdef _WIN32
+	WindowsThread.join();
+#endif
 	SystemCore.reset();
 
 	if (BPS::ISystem::ShouldUpdate()) {

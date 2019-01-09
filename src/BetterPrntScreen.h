@@ -11,6 +11,7 @@
 #include "INotifyIcon.h"
 #include "BPSWindows.h"
 #include "BPSWindowsNotifyIcon.h"
+#include "WindowsProc.h"
 #include "Logger.h"
 #include "Utilities.h"
 #include "Network.h"

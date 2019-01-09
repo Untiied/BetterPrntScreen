@@ -1,11 +1,10 @@
 #pragma once
 #include "INotifyIcon.h"
 #include <string>
+#include <tchar.h>
 #include <Windows.h>
 #include <ShlObj.h>
-#define APPWM_ICONNOTIFY (WM_APP + 1)
 #include <shellapi.h>
-#include <tchar.h>
 
 namespace BetterPrntScreen
 {
@@ -16,14 +15,11 @@ namespace BetterPrntScreen
 			BPSWindowsNotifyIcon();
 			~BPSWindowsNotifyIcon();
 		public:
-			void Init();
-			void Cycle();
 			bool SendToNotificationArea();
 			bool RemoveFromNotificationArea();
 
 			static std::wstring StringtoWString(std::string str);
 
-			//Win api needs to call this. Not class specific.
 			static void APIENTRY DeployPopupMenu();
 		};
 	}
