@@ -1,11 +1,7 @@
 #include "BetterPrntScreen.h"
-#include <filesystem>
 
 namespace BPS = ::BetterPrntScreen;
-
-//Defined on the stack, per system based.
 BPS::ISystem* SystemCore;
-
 bool bNormalScreenShot = false;
 
 int main(int argc, char *argv[])
@@ -16,16 +12,17 @@ int main(int argc, char *argv[])
 	}
 
 	#ifdef _WIN32
+		#ifdef NDEBUG
+			ShowWindow(GetConsoleWindow(), SW_HIDE);
+		#else
+			ShowWindow(GetConsoleWindow(), SW_SHOW);
+		#endif 
+
 		//Starts up the core of the system. For Windows.
 		SystemCore = new BPS::Windows::BPSWindows();
 
 		//Creates a seperate thread for the WindowsProcess to exist. This is because OS polling runs events need to be looped. Taking over the main thread.
 		std::thread WindowsThread(&BPS::Windows::WindowsProc::Init);
-	#ifdef NDEBUG
-		ShowWindow(GetConsoleWindow(), SW_HIDE);
-	#else
-		ShowWindow(GetConsoleWindow(), SW_SHOW);
-	#endif 
 	#endif
 
 	if (Updater::IsUpdateAvaliable()) {
@@ -73,8 +70,8 @@ int main(int argc, char *argv[])
 	}
 
 #ifdef _WIN32
-	WindowsThread.join();
 	BPS::Windows::BPSWindowsNotifyIcon::Get()->RemoveFromNotificationArea();
+	WindowsThread.join();
 
 	if (BPS::ISystem::ShouldUpdate()) {
 		system("start BPSUpdater.exe");

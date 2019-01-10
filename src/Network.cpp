@@ -38,9 +38,9 @@ std::string Network::GetServerClientVersion() {
 		return responseFromServer.substr(0, responseFromServer.rfind('\n'));
 	}
 	else {
-		NetworkLog("Couldn't receive the clientVersion from server...");
+		NetworkLog("Couldn't receive the Client Version from server...");
 		curl_easy_cleanup(curlhash);
-		return nullptr;
+		return "0.0.0";
 	}
 }
 

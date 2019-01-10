@@ -23,10 +23,10 @@ namespace BetterPrntScreen
 			static void APIENTRY DeployPopupMenu();
 
 			static BPSWindowsNotifyIcon* Get();
-		private:
-			static BPSWindowsNotifyIcon* BPSWindowsNotifyIconInstance;
 
 			static HWND NotifyIconWindow;
+		private:
+			static BPSWindowsNotifyIcon* BPSWindowsNotifyIconInstance;
 		};
 	}
 }

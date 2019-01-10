@@ -81,7 +81,7 @@ void BetterPrntScreen::Windows::WindowsProc::CycleMessages()
 {
 	MSG Message;
 	do {
-		if (GetMessage(&Message, nullptr, 0, 0)) {
+		if (GetMessage(&Message, BPSWindowsNotifyIcon::Get()->NotifyIconWindow, 0, 0)) {
 			TranslateMessage(&Message);
 			DispatchMessage(&Message);
 		}

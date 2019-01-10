@@ -45,13 +45,14 @@ namespace BetterPrntScreen
 
 			exitPopupMenu = CreatePopupMenu();
 
-			AppendMenu(exitPopupMenu, MF_STRING, UPDATE_ID, _T("&Check for updates"));
-			AppendMenu(exitPopupMenu, MF_STRING, EXIT_ID, _T("&Exit"));
+			std::wstring ClientVersion = StringtoWString("Version: ") + StringtoWString(ISystem::GetClientVersion());
+			AppendMenu(exitPopupMenu, MF_STRING | MF_DISABLED, UPDATE_VERSION_ID, ClientVersion.c_str());
 
 			AppendMenu(exitPopupMenu, MF_SEPARATOR, NULL, NULL);
 
-			std::wstring ClientVersion = StringtoWString("Version: ") + StringtoWString(ISystem::GetClientVersion());
-			AppendMenu(exitPopupMenu, MF_STRING | MF_DISABLED, UPDATE_VERSION_ID, ClientVersion.c_str());
+			AppendMenu(exitPopupMenu, MF_STRING, UPDATE_ID, _T("&Check for updates"));
+			AppendMenu(exitPopupMenu, MF_STRING, EXIT_ID, _T("&Exit"));
+
 			SetForegroundWindow(NotifyIconWindow);
 
 			TrackPopupMenu(exitPopupMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_BOTTOMALIGN, pt.x, pt.y, 0, NotifyIconWindow, NULL);
