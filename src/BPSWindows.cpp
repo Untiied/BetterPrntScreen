@@ -51,8 +51,16 @@ namespace BetterPrntScreen
 			CreateDirectory(StringtoWString(std::string(GetAppDataPath() + ApplicationNamePathed)).c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError();
 			CreateDirectory(StringtoWString(std::string(GetAppDataPath() + ApplicationNamePathed + "/screenshots/")).c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError();
 			CreateDirectory(StringtoWString(std::string(GetAppDataPath() + ApplicationNamePathed + "/logs/")).c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError();
+
 			Gdiplus::GdiplusStartup(&GdiPlusToken, &GdiPlusStartupInput, NULL);
 			GetEncoderClsid(L"image/png", &EncoderClsid);
+
+			if (RegisterForStartup()) {
+				SystemLog("Succesfully added BetterPrntScreen to startup!")
+			}
+			else {
+				SystemLog("failed to add BetterPrntScreen to startup!")
+			}
 		}
 
 		BPSWindows::~BPSWindows() {
@@ -278,7 +286,6 @@ namespace BetterPrntScreen
 			LONG LResult = 0;
 			BOOL bSuccess = TRUE;
 			DWORD DWSize;
-			PCWSTR args = L"-foobar";
 
 			std::string ExecutablePath = Utilities::GetExecutablePath();
 
@@ -292,7 +299,9 @@ namespace BetterPrntScreen
 			if (ExecutablePath.find(' ') != std::string::npos)
 			{
 				SystemLog("Space found in path to file. Compatability ran to add to startup.")
-				wcscat_s(szValue, count, args);
+
+				PCWSTR Arguments = L"-foobar";
+				wcscat_s(szValue, count, Arguments);
 			}
 
 			LResult = RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, NULL, 0, (KEY_WRITE | KEY_READ), NULL, &HKey, NULL);
@@ -330,7 +339,7 @@ namespace BetterPrntScreen
 			POINT CursorPoint = {};
 			GetCursorPos(&CursorPoint);
 
-			EnumDisplayMonitors(0 ,0, &MonitorEnum, (LPARAM)&MonitorData);
+			EnumDisplayMonitors(0, 0, &MonitorEnum, (LPARAM)&MonitorData);
 
 			RECT SelectedMonitor;
 			for (auto &Monitor : MonitorData.Monitors) {

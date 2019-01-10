@@ -4,7 +4,7 @@
 namespace BPS = ::BetterPrntScreen;
 
 //Defined on the stack, per system based.
-std::shared_ptr<BPS::ISystem> SystemCore;
+BPS::ISystem* SystemCore;
 
 bool bNormalScreenShot = false;
 
@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 
 	#ifdef _WIN32
 		//Starts up the core of the system. For Windows.
-		SystemCore = std::make_shared<BPS::Windows::BPSWindows>();
+		SystemCore = new BPS::Windows::BPSWindows();
 
 		//Creates a seperate thread for the WindowsProcess to exist. This is because OS polling runs events need to be looped. Taking over the main thread.
 		std::thread WindowsThread(&BPS::Windows::WindowsProc::Init);
@@ -27,14 +27,6 @@ int main(int argc, char *argv[])
 		ShowWindow(GetConsoleWindow(), SW_SHOW);
 	#endif 
 	#endif
-
-	// Asks the SystemCore to register the application for a runtime startup. 
-	if (SystemCore->RegisterForStartup()) {
-		SystemLog("Succesfully added to startup!")
-	}
-	else {
-		SystemLog("failed to add to startup!")
-	}
 
 	if (Updater::IsUpdateAvaliable()) {
 		Updater::AttemptUpdateSequence();
@@ -79,12 +71,15 @@ int main(int argc, char *argv[])
 		// Sleep is only here to tell the system to relax and not use CPU cycles on our program until we get a key press.
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
+
 #ifdef _WIN32
 	WindowsThread.join();
-#endif
-	SystemCore.reset();
+	BPS::Windows::BPSWindowsNotifyIcon::Get()->RemoveFromNotificationArea();
 
 	if (BPS::ISystem::ShouldUpdate()) {
 		system("start BPSUpdater.exe");
 	}
+#endif
+
+	delete(SystemCore);
 }

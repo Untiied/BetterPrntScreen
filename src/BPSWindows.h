@@ -32,7 +32,7 @@ namespace BetterPrntScreen
 
 			std::string CaptureSnapShot();
 
-			std::string CaptureSnapShotBetween(Point bound1, Point bound2);
+			std::string CaptureSnapShotBetween(Point BoundOne, Point BoundTwo);
 
 			Point GetCursorPosition();
 

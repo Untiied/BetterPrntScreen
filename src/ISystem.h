@@ -20,6 +20,7 @@ namespace BetterPrntScreen
 	*/
 	class ISystem {
 	public:
+		ISystem();
 		virtual ~ISystem() {};
 
 		/*
