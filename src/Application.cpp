@@ -5,7 +5,6 @@ namespace BPS = ::BetterPrntScreen;
 
 //Defined on the stack, per system based.
 std::shared_ptr<BPS::ISystem> SystemCore;
-std::shared_ptr<BPS::INotifyIcon> NotificationIcon;
 bool bNormalScreenShot = false;
 
 int main(int argc, char *argv[])
@@ -18,7 +17,6 @@ int main(int argc, char *argv[])
 	#ifdef _WIN32
 		//Starts up the core of the system. For Windows.
 		SystemCore = std::make_shared<BPS::Windows::BPSWindows>();
-		NotificationIcon = std::make_shared<BPS::Windows::BPSWindowsNotifyIcon>();
 
 		//Creates a seperate thread for the WindowsProcess to exist. This is because OS polling runs events need to be looped. Taking over the main thread.
 		std::thread WindowsThread(&BPS::Windows::WindowsProc::Init);
@@ -28,8 +26,6 @@ int main(int argc, char *argv[])
 		ShowWindow(GetConsoleWindow(), SW_SHOW);
 	#endif 
 	#endif
-
-	NotificationIcon->SendToNotificationArea();
 
 	// Asks the SystemCore to register the application for a runtime startup. 
 	if (SystemCore->RegisterForStartup(argv[0])) {

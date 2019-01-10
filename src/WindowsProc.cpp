@@ -7,8 +7,6 @@
 
 using namespace BetterPrntScreen::Windows;
 
-HWND WindowsProc::NotifyIconWindow = {};
-
 ATOM BetterPrntScreen::Windows::WindowsProc::MyRegisterClass(HINSTANCE hInstance)
 {
 	WNDCLASSEX wcex = {};
@@ -29,6 +27,8 @@ ATOM BetterPrntScreen::Windows::WindowsProc::MyRegisterClass(HINSTANCE hInstance
 
 void BetterPrntScreen::Windows::WindowsProc::Init()
 {
+	BPSWindowsNotifyIcon::Get()->SendToNotificationArea();
+
 	CycleMessages();
 }
 
@@ -87,7 +87,7 @@ void BetterPrntScreen::Windows::WindowsProc::CycleMessages()
 {
 	MSG msg;
 	do {
-		if (GetMessage(&msg, NotifyIconWindow, 0, 0)) {
+		if (GetMessage(&msg, nullptr, 0, 0)) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}

@@ -21,6 +21,12 @@ namespace BetterPrntScreen
 			static std::wstring StringtoWString(std::string str);
 
 			static void APIENTRY DeployPopupMenu();
+
+			static BPSWindowsNotifyIcon* Get();
+		private:
+			static BPSWindowsNotifyIcon* BPSWindowsNotifyIconInstance;
+
+			static HWND NotifyIconWindow;
 		};
 	}
 }

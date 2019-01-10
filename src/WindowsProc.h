@@ -23,9 +23,6 @@ namespace BetterPrntScreen
 			static void Init();
 
 			static void CycleMessages();
-
-		public:
-			static HWND NotifyIconWindow;
 		};
 
 	}

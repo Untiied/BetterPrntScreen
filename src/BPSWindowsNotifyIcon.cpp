@@ -10,6 +10,9 @@ namespace BetterPrntScreen
 {
 	namespace Windows {
 
+		BPSWindowsNotifyIcon* BPSWindowsNotifyIcon::BPSWindowsNotifyIconInstance = 0;
+		HWND BPSWindowsNotifyIcon::NotifyIconWindow;
+
 		std::wstring BPSWindowsNotifyIcon::StringtoWString(std::string str) {
 			int len;
 			int slength = (int)str.length() + 1;
@@ -25,11 +28,13 @@ namespace BetterPrntScreen
 		BPSWindowsNotifyIcon::BPSWindowsNotifyIcon()
 		{
 			SystemLog("Attempting to register class with windows:  %s", WindowsProc::MyRegisterClass(GetModuleHandle(NULL)) ? "Successful" : "Error")
+			NotifyIconWindow = CreateWindow(_T("BetterPrntScreen"), NULL, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, GetModuleHandle(NULL), NULL);
 		}
 
 		BPSWindowsNotifyIcon::~BPSWindowsNotifyIcon()
 		{
 			RemoveFromNotificationArea();
+			delete(BPSWindowsNotifyIconInstance);
 		}
 
 		void APIENTRY BPSWindowsNotifyIcon::DeployPopupMenu()
@@ -47,21 +52,29 @@ namespace BetterPrntScreen
 
 			std::wstring ClientVersion = StringtoWString("Version: ") + StringtoWString(ISystem::GetClientVersion());
 			AppendMenu(exitPopupMenu, MF_STRING | MF_DISABLED, UPDATE_VERSION_ID, ClientVersion.c_str());
-			SetForegroundWindow(WindowsProc::NotifyIconWindow);
+			SetForegroundWindow(NotifyIconWindow);
 
-			TrackPopupMenu(exitPopupMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_BOTTOMALIGN, pt.x, pt.y, 0, WindowsProc::NotifyIconWindow, NULL);
+			TrackPopupMenu(exitPopupMenu, TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_BOTTOMALIGN, pt.x, pt.y, 0, NotifyIconWindow, NULL);
+		}
+
+		BPSWindowsNotifyIcon* BPSWindowsNotifyIcon::Get()
+		{
+			if (BPSWindowsNotifyIconInstance == nullptr)
+			{
+				BPSWindowsNotifyIconInstance = new BPSWindowsNotifyIcon();
+				return BPSWindowsNotifyIconInstance;
+			}
+
+			return BPSWindowsNotifyIconInstance;
 		}
 
 		bool BPSWindowsNotifyIcon::SendToNotificationArea()
 		{
-			WindowsProc::NotifyIconWindow = CreateWindow(_T("BetterPrntScreen"), NULL, WS_OVERLAPPEDWINDOW,
-				CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, GetModuleHandle(NULL), NULL);
-
-			if (WindowsProc::NotifyIconWindow) {
+			if (NotifyIconWindow) {
 				NOTIFYICONDATAW notifyData = {};
 				notifyData.cbSize = sizeof(NOTIFYICONDATAW);
 				notifyData.uID = 1001;
-				notifyData.hWnd = WindowsProc::NotifyIconWindow;
+				notifyData.hWnd = NotifyIconWindow;
 				notifyData.uVersion = NOTIFYICON_VERSION_4;
 				notifyData.dwState = NIS_SHAREDICON;
 				notifyData.uFlags = NIF_ICON | NIF_MESSAGE | NIF_GUID | NIF_TIP;
@@ -81,11 +94,11 @@ namespace BetterPrntScreen
 
 		bool BPSWindowsNotifyIcon::RemoveFromNotificationArea()
 		{
-			if (WindowsProc::NotifyIconWindow) {
+			if (NotifyIconWindow) {
 				NOTIFYICONDATAW notifyData = {};
 				notifyData.cbSize = sizeof(NOTIFYICONDATAW);
 				notifyData.uID = 1001;
-				notifyData.hWnd = WindowsProc::NotifyIconWindow;
+				notifyData.hWnd = NotifyIconWindow;
 				notifyData.uVersion = NOTIFYICON_VERSION_4;
 				notifyData.dwState = NIS_SHAREDICON;
 				notifyData.uFlags = NIF_ICON | NIF_MESSAGE | NIF_GUID | NIF_TIP;
