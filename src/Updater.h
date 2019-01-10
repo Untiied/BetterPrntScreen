@@ -8,6 +8,12 @@ public:
 	//If the clients version is < the servers then it will return true.
 	static bool IsUpdateAvaliable();
 
+	//Function will attempt to run an update sequence. 
+	//Attempting to download the update, unpack it, then fire for a update.
+	static bool AttemptUpdateSequence();
+	
+private:
+
 	//Function will send a request to the server.
 	//Will attempt to download the newest update.
 	static bool AttemptUpdateDownload(std::string updateName);
@@ -16,7 +22,6 @@ public:
 	//Leaves all new data inside a folder called BPSUpdate.
 	static bool UnpackUpdate(std::string updateName);
 
-private:
 	//Breaks down each string to major, minor, and patch based on the Semantic Versioniong protocal. 
 	//Compares each of the values. If even one of them don't match the server value, an update is forced.
 	static bool AreVersionsSimilar(std::string OurClientValue, std::string ServerClientValue);

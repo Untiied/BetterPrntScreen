@@ -64,7 +64,7 @@ namespace BetterPrntScreen
 		virtual std::string GetWorkingDir() = 0;
 
 		//Registers the Application to be ran upon operation system startup.
-		virtual bool RegisterForStartup(const char* Str) = 0;
+		virtual bool RegisterForStartup() = 0;
 
 		//Used to manually force the write of a log file.
 		virtual void DisposeLogFile() = 0;

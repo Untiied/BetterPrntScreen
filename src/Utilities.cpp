@@ -5,6 +5,10 @@
 #define ZLIB_WINAPI
 #include <zipper/unzipper.h>
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 std::string Utilities::CurrentDateTime() {
 	time_t     now = time(0);
 	struct tm  tstruct;
@@ -16,7 +20,20 @@ std::string Utilities::CurrentDateTime() {
 	return buf;
 }
 
-bool Utilities::unpackFile(std::string fileName)
+std::string Utilities::GetExecutablePath()
+{
+
+#ifdef _WIN32
+	wchar_t ExeName[MAX_PATH];
+	GetModuleFileName(NULL, ExeName, MAX_PATH);
+	std::wstring WideStandardString(ExeName);
+	return std::string(WideStandardString.begin(), WideStandardString.end());
+#endif
+
+	return std::string();
+}
+
+bool Utilities::UnpackFile(std::string fileName)
 {
 	using namespace zipper;
 

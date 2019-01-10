@@ -28,6 +28,19 @@ bool Updater::IsUpdateAvaliable()
 	#endif
 }
 
+bool Updater::AttemptUpdateSequence()
+{
+	if (Updater::AttemptUpdateDownload(Network::GetServerClientVersion() + ".zip")) {
+		if (Updater::UnpackUpdate("BPSUpdate.zip")) {
+			BetterPrntScreen::ISystem::SetShutdownFlag(true);
+			BetterPrntScreen::ISystem::SetUpdateFlag(true);
+			return true;
+		}
+	}
+
+	return false;
+}
+
 bool Updater::AttemptUpdateDownload(std::string updateName)
 {
 	return Network::DownloadNewestUpdate(updateName);
@@ -35,7 +48,7 @@ bool Updater::AttemptUpdateDownload(std::string updateName)
 
 bool Updater::UnpackUpdate(std::string updateName)
 {
-	return Utilities::unpackFile(updateName);
+	return Utilities::UnpackFile(updateName);
 }
 
 bool Updater::AreVersionsSimilar(std::string OurClientValue, std::string ServerClientValue)

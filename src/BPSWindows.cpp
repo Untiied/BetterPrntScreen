@@ -1,6 +1,7 @@
 #include "BPSWindows.h"
 #include "Logger.h"
 #include "Utilities.h"
+#include <filesystem>
 
 namespace BetterPrntScreen
 {
@@ -271,46 +272,47 @@ namespace BetterPrntScreen
 			Logger::ReleaseLog(std::string(GetAppDataPath() + ApplicationNamePathed + "/logs/").c_str(), Utilities::CurrentDateTime());
 		}
 
-		bool BPSWindows::RegisterForStartup(const char* Str)
+		bool BPSWindows::RegisterForStartup()
 		{
-			HKEY hKey = NULL;
-			LONG lResult = 0;
-			BOOL fSuccess = TRUE;
-			DWORD dwSize;
+			HKEY HKey = NULL;
+			LONG LResult = 0;
+			BOOL bSuccess = TRUE;
+			DWORD DWSize;
 			PCWSTR args = L"-foobar";
+
+			std::string ExecutablePath = Utilities::GetExecutablePath();
 
 			const size_t count = MAX_PATH * 2;
 			wchar_t szValue[count] = {};
-			std::wstring pathToExe = StringtoWString(std::string(Str));
+			std::wstring WideExecutablePath = StringtoWString(std::string(ExecutablePath));
 			wcscpy_s(szValue, count, L"\"");
-			wcscat_s(szValue, count, pathToExe.c_str());
+			wcscat_s(szValue, count, WideExecutablePath.c_str());
 			wcscat_s(szValue, count, L"\" ");
 
-			if (args != NULL)
+			if (ExecutablePath.find(' ') != std::string::npos)
 			{
-				// caller should make sure "args" is quoted if any single argument has a space
-				// e.g. (L"-name \"Mark Voidale\"");
+				SystemLog("Space found in path to file. Compatability ran to add to startup.")
 				wcscat_s(szValue, count, args);
 			}
 
-			lResult = RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, NULL, 0, (KEY_WRITE | KEY_READ), NULL, &hKey, NULL);
+			LResult = RegCreateKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, NULL, 0, (KEY_WRITE | KEY_READ), NULL, &HKey, NULL);
 
-			fSuccess = (lResult == 0);
+			bSuccess = (LResult == 0);
 
-			if (fSuccess)
+			if (bSuccess)
 			{
-				dwSize = (wcslen(szValue) + 1) * 2;
-				lResult = RegSetValueExW(hKey, L"BetterPrntScreen", 0, REG_SZ, (BYTE*)szValue, dwSize);
-				fSuccess = (lResult == 0);
+				DWSize = (wcslen(szValue) + 1) * 2;
+				LResult = RegSetValueExW(HKey, L"BetterPrntScreen", 0, REG_SZ, (BYTE*)szValue, DWSize);
+				bSuccess = (LResult == 0);
 			}
 
-			if (hKey != NULL)
+			if (HKey != NULL)
 			{
-				RegCloseKey(hKey);
-				hKey = NULL;
+				RegCloseKey(HKey);
+				HKey = NULL;
 			}
 
-			return fSuccess;
+			return bSuccess;
 		}
 
 		BOOL CALLBACK MonitorEnum(HMONITOR hMon, HDC hdc, LPRECT lprcMonitor, LPARAM pData)

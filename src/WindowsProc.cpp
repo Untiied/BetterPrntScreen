@@ -27,8 +27,8 @@ ATOM BetterPrntScreen::Windows::WindowsProc::MyRegisterClass(HINSTANCE hInstance
 
 void BetterPrntScreen::Windows::WindowsProc::Init()
 {
+	// Should intitilize it for the first time under this thread head. Needed because of message pump issues under the windows api.
 	BPSWindowsNotifyIcon::Get()->SendToNotificationArea();
-
 	CycleMessages();
 }
 
@@ -41,13 +41,12 @@ LRESULT CALLBACK BetterPrntScreen::Windows::WindowsProc::WndProc(HWND hwnd, UINT
 		{
 			switch (lParam)
 			{
-			case WM_LBUTTONUP:
-				//...
-				break;
-			case WM_RBUTTONUP:
-				BPSWindowsNotifyIcon::DeployPopupMenu();
-				break;
-			}
+				case WM_LBUTTONUP:
+					break;
+				case WM_RBUTTONUP:
+					BPSWindowsNotifyIcon::DeployPopupMenu();
+					break;
+				}
 
 			return 0;
 		}
@@ -56,24 +55,19 @@ LRESULT CALLBACK BetterPrntScreen::Windows::WindowsProc::WndProc(HWND hwnd, UINT
 
 			switch (wParam)
 			{
-			case EXIT_ID:
-			{
-				ISystem::SetShutdownFlag(true);
-				break;
-			}
-
-			case UPDATE_ID:
-			{
-				if (Updater::IsUpdateAvaliable()) {
-					if (Updater::AttemptUpdateDownload(Network::GetServerClientVersion() + ".zip")) {
-						if (Updater::UnpackUpdate("BPSUpdate.zip")) {
-							ISystem::SetShutdownFlag(true);
-							ISystem::SetUpdateFlag(true);
-						}
-					}
+				case EXIT_ID:
+				{
+					ISystem::SetShutdownFlag(true);
+					break;
 				}
-				break;
-			}
+
+				case UPDATE_ID:
+				{
+					if (Updater::IsUpdateAvaliable()) {
+						Updater::AttemptUpdateSequence();
+					}
+					break;
+				}
 			}
 
 			return 0;
@@ -85,11 +79,11 @@ LRESULT CALLBACK BetterPrntScreen::Windows::WindowsProc::WndProc(HWND hwnd, UINT
 
 void BetterPrntScreen::Windows::WindowsProc::CycleMessages()
 {
-	MSG msg;
+	MSG Message;
 	do {
-		if (GetMessage(&msg, nullptr, 0, 0)) {
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+		if (GetMessage(&Message, nullptr, 0, 0)) {
+			TranslateMessage(&Message);
+			DispatchMessage(&Message);
 		}
 	} while (!ISystem::ShouldShutdown());
 }

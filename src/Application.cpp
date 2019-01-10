@@ -5,6 +5,7 @@ namespace BPS = ::BetterPrntScreen;
 
 //Defined on the stack, per system based.
 std::shared_ptr<BPS::ISystem> SystemCore;
+
 bool bNormalScreenShot = false;
 
 int main(int argc, char *argv[])
@@ -28,7 +29,7 @@ int main(int argc, char *argv[])
 	#endif
 
 	// Asks the SystemCore to register the application for a runtime startup. 
-	if (SystemCore->RegisterForStartup(argv[0])) {
+	if (SystemCore->RegisterForStartup()) {
 		SystemLog("Succesfully added to startup!")
 	}
 	else {
@@ -36,12 +37,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (Updater::IsUpdateAvaliable()) {
-		if (Updater::AttemptUpdateDownload(Network::GetServerClientVersion() + ".zip")) {
-			if (Updater::UnpackUpdate("BPSUpdate.zip")) {
-				SystemCore->SetShutdownFlag(true);
-				SystemCore->SetUpdateFlag(true);
-			}
-		}
+		Updater::AttemptUpdateSequence();
 	}
 
 	while (!SystemCore->ShouldShutdown())

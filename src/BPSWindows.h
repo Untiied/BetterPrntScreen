@@ -28,6 +28,8 @@ namespace BetterPrntScreen
 
 			void DisposeLogFile();
 
+			bool RegisterForStartup();
+
 			std::string CaptureSnapShot();
 
 			std::string CaptureSnapShotBetween(Point bound1, Point bound2);
@@ -43,8 +45,6 @@ namespace BetterPrntScreen
 			void AwaitMousePress();
 
 			bool AwaitKeyRelease(const int keyCode);
-
-			bool RegisterForStartup(const char* Str);
 
 		private:
 			CLSID EncoderClsid;
